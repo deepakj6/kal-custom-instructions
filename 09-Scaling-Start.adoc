@@ -1,0 +1,253 @@
+= Scalability & Availability
+:stylesheet: boot-flatly.css
+:nofooter:
+:data-uri:
+
+== Learning Outcomes
+After completing the lab, you will be able to:
+
+. Scale application vertically & horizontally
+. Implement storage using Persistent Volume and Persistent Volume Claims
+
+== Vertical Scaling
+
+. Scale the pages application vertically, to request `500 Mi` memory and `0.25` cpu usage and limits as
+`900 Mi` memory and `1` cpu.
+
+. Update the `~./workspace/kubernetes-manifests/pages/deployment.yaml` file with the the resource request specification
+and re-deploy pages.
++ 
+[source,yaml]
+--------
+ 
+resources:
+      requests:
+        memory: 600Mi
+        cpu: 0.25
+      limits:
+        memory: 900Mi
+        cpu: 1
+--------
++
+Alternatively, you can edit the deployment imperatively like:
++
+`kubectl edit deploy pages`
++
+vi-editor opens up automatically with the live deployment file which can be edited. Use this option if you are well versed in using vi editor and save it to see the configuration updated.
+
+== Horizontal Scaling
+
+. Scale out the pages application horizontally, by increasing the number of replicas to 2.
+
+. There are 2 ways of acheiving this:
+.. Update the `Deployment.spec.replicas` field of `~./workspace/kubernetes-manifests/pages/deployment.yaml` file
+and then using the command `kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml`
+
+.. Imperative way:
+ `kubectl scale deploy pages --replicas=2`
+
++
+Let's use the imperative way, which is much faster.
+
+
+. Verify the number of running pods for pages after scaling. This might take a while.
+
++
+`kubectl get deploy pages`
++
+`kubectl port-forward svc/pages 8080:8080`
+
++
+`curl http://localhost:8080/pages`
+
+. Scale in the pages application to 1 replica.
++
+`kubectl scale deploy pages --replicas=1`
+
+== Peristent volume and persistent volume claims
+
+*Understanding the scenario*
+
+. POST few entries into pages application.
+
+. Delete the mysql pod. Since we have the replicaset, the pod will be recreated to maintain the desired state of the deployment.
+. Wait till the pod gets recreated. Issue a GET request to the pages controller.
+. What happened? You need to run the migration job again.
+. Wait till the job is completed. Issue a GET request to the pages controller.
+. What happened to the data that was POST'ed?
+
+*Need to refactor the design for persistence of data*
+
+
+image::deployment-architecture-with-storage.png[] 
+
+We have used volumes in our labs. They allowed us to mount a storage unit such as file system folder on a node or a cloud storage bucket and also share information between nodes.These regular volumes are evicted when the pod is evicted.
+ 
+Kubernetes provides a persistent storage solution for containers called Persistent Volumes (PV).  Persistent Volume can remain alive for as long as necessary for ongoing operations.
+
+. Persistence Volume normally makes use of `StorageClass` objects in K8s, creating an abstraction to connect to various storage solutions for multiple storage requirements.
++
+For more information, refer link:https://kubernetes.io/docs/concepts/storage/persistent-volumes["https://kubernetes.io/docs/concepts/storage/persistent-volumes", window="_blank"]   
+
+. Create storage class object definition in `~./workspace/kubernetes-manifests/mysql/storage-class.yaml` as given below.
++
+[source,yaml]
+--------
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: database
+  labels:
+    addonmanager.kubernetes.io/mode: EnsureExists
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+
+--------
+
+. Create persistent volume definition in `~./workspace/kubernetes-manifests/mysql/pv.yaml` as given below. Replace `[student-name]` with your namespace name at 2 places.
++
+[source,yaml]
+--------
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv-[student-name]
+  labels:
+    type: local
+spec:
+  storageClassName: database
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/var/lib/mysql/[student-name]"
+
+--------
+
+. We can now request for the persistent volume, by creating a Persistent Volume Claim object with below specification in `~./workspace/kubernetes-manifests/mysql/pvc.yaml`. Replace `[student-name]` with your namespace name.
+
++
+[source,yaml]
+--------
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc-[student-name]
+  namespace: [student-name]
+spec:
+  storageClassName: database
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+--------
+. Edit and update the volume and volume mount section of `~./workspace/kubernetes-manifests/mysql/deployment.yaml` file to use the persistent volume claim defined earlier.
++
+[source,yaml]
+--------
+
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage          
+          persistentVolumeClaim:
+            claimName: mysql-pvc-[student-name]
+
+--------
+. Update the environment variable for spring datasource url in `~./workspace/kubernetes-manifests/pages/deployment.yaml` file with the below value
++
+[source, yaml]
+--------
+- name: SPRING_DATASOURCE_URL
+  value: jdbc:mysql://pages-mysql/pages?allowPublicKeyRetrieval=true&useSSL=false
+--------
+
+.  Delete deployments and job
++ 
+[source,shell script]
+--------
+ 
+ kubectl delete deploy pages
+ kubectl delete deploy mysql
+ kubectl delete job flyway-job
+
+--------
+
+.  Create storage related objects in minikube
++ 
+[source,shell script]
+--------
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/storage-class.yaml
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pv.yaml
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pv.yaml
+
+--------
+
++
+[source,shell script]
+--------
+ kubectl get storageclasses
+ kubectl get pv
+ kubectl get pvc
+--------
+
+.  Create all the deployments and job in minikube
++ 
+[source,shell script]
+--------
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/deployment.yaml
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/flyway-job.yaml
+ kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml
+--------
+. Testing on minikube
++
+[source,text]
+--------
+kubectl get deploy 
+kubectl get jobs
+kubectl get pods
+
+
+#Delete the job as you dont need it after completion.
+kubectl delete job flyway-job
+
+kubectl port-forward svc/pages 8080:8080
+
+curl -i -XPOST -H"Content-Type: application/json" localhost:8080/pages -d"{\"businessName\": \"Uber\", \"address\": \"SanFrancisco, CA, USA\", \"categoryId\": 123, \"contactNumber\": \"0045987869\"}"
+
+curl localhost:8080/pages
+
+#Stop the port forwarding by presing CTRL+C
+
+#Let's delete the mysql deployment and recreate it
+
+kubectl delete deploy mysql
+
+curl localhost:8080/pages
+
+#What's the error?
+#Pages app will be DOWN, as the health checks will fail, and the kubelet will kill and restart the container. See the logs and events.
+
+#Let's create the mysql deployment. This time, we will not run the flyway migration job.
+
+ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/deployment.yaml
+
+ kubectl get deploy
+
+ kubectl get pods
+
+ #Verify that all the pods are running.
+
+ kubectl port-forward svc/pages 8080:8080
+
+ curl localhost:8080/pages
+--------
+. Was the data persistent? Were you able to retrieve all the  entries added?

@@ -1,0 +1,151 @@
+Custom Commands
+===============
+1 - Create a busybox pod which prints "Hello from pages Yellow Pages" on the console
+2 - Create a busybox pod which prints "Hello from pages Yellow Pages" on the console, for every 10 seconds infinitely
+3 - Create an nginx pod and test it in the browser
+4 - Create a busybox pod which prints the output of nginx pod for every 10 seconds
+
+Pods in Detail:
+==============
+1 - Create a busybox pod which prints the `current date` on the console  - Instructions
+2 - Create a busybox pod which prints `current date` on the console, for every 10 seconds infinitely  - Instructions
+3 - Create an nginx pod and test it in the browser  - Instructions
+4 - Create a busybox pod which prints the output of `pages application` for every 10 seconds infinitely  - Instructions
+
+Environment variables:
+=======================
+1 - Create environment variables for busybox pod with key=`course` and value=`K8s`
+    Verify the environment variables are set properly
+2 - Create environment variables for pages application with key=`PAGE_CONTENT` and value=`Hello from pages environment`
+    Verify the environment variables are set properly  - Instructions 
+
+Probes and Observability:
+========================
+Readiness Probe:
+1- Create a simple web server that starts serving traffic after some delay while the application starts up. If we didn't configure our
+readiness probe, Kubernetes would either start sending traffic to the container before we're ready, or it would mark the pod as unhealthy and never send it traffic. Use the image `python:2.7-alpine`
+Liveness Probe:
+2 - In the previous scenario add a liveness probe of type exec command to check if index.html exists whose exit code determines the sucess of the probe.
+
+3 - Configure liveness and readiness probe for pages application and verify - Instructions
+
+Security Context after volumes
+=============================
+1- create a pod with a container that writes the current date to a file in a mounted volume at /etc/kal-directory/date-file.txt every five seconds. The created file should have the user ID 45 and the group ID 231 which will be useful for auditing and tracking files system updates. Use alpine image.
+
+Multi-container Pod Design after volumes & top
+=================================================
+1 - Create a pod that defines an application container which writes the current date to a log file every five seconds. The sidecar container is nginx serving that log file in a shared directory.
+2 - Create a pod that defines the pages application container which writes the logs to a file. Create a sidecar container serving that log file in a shared directory - Instructions
+3 - Create a pod that defines an application container which writes the current date and memory usage to a log file every five seconds. The adapter container will inspect the contents of the app's log file, reformat it, and write the correctly formatted () output to a new file.
+
+free -tw --giga
+---------------
+
+Example:
+If the output of free command looks like below:
+-------------------------------------------------------------------------------
+Thu Mar 4 11:26:28 GMT 2021
+              total        used        free      shared     buffers       cache   available
+Mem:             32           9          10           0           0          11          22
+Swap:             2           0           2
+Total:           34           9          12
+
+-------------------------------------------------------------------------------
+The adapter should create a report like the below:
+-------------------------------------------------------------------------------
+Date: Thu Mar  4 09:36:42 UTC 2021
+Total Memory: 34GB
+Free Memory: 12GB
+-------------------------------------------------------------------------------
+
+4 - Create a pod that defines an application container which writes the proccess to a file every five seconds. Create a adapter container that display the top 3 processes consuming maximum memory. Refer the below example output.
+
+ps -ao "user,comm,pid,pcpu,pmem,start,time" --sort=pmem
+
+Example:
+Adapter should create a report like the below:
+----------------------------------------------------------------------------
+USER     COMMAND           PID %CPU %MEM  STARTED     TIME
+student  java            16213  2.7  3.7 07:34:42 00:06:47
+student  gnome-shell      2373 21.7  1.7   Feb 22 2-04:02:42
+student  chrome          14101  1.3  1.1 13:09:55 00:17:56
+----------------------------------------------------------------------------
+
+Labels, Selectors & Annotations
+============================================================================
+
+1 - Add a label tier=service to the pages application and display the label
+2 - Create a pod nginx and add a label tier=frontend 
+3 - Get all the pods with label tier=frontend
+4 - Get all the pods which has label tier set to any value
+5 - Create a service which routes the request to nginx pod using selectors in the yaml file
+6 - Annotate nginx pod with annotation team=yourteam and course=k8s
+
+Deployments
+===========================================================================
+Demos:
+======
+1 - Create an nginx (1.15.0) deployment with 3 replicas imperatively
+2 - Create nginx deployment with 2 replicas using yaml manifest file
+3 - Verify the first version of deployment has been deployed and rolled out
+4 - Update the image to use the latest version of nginx
+5 - Verify the second version of deployment has been deployed and rolled out
+6 - Update the image to use the nginx:1.100.101
+7 - Verify rollout history deployment 
+8 - Rollback to the previous version
+9 - Manually scale to use 5 replicas
+10 - Manually scale to use 1 replica
+
+
+Labs:
+========
+1 - Create pages deployment with 2 replicas imperatively
+2 - Create pages deployment with 2 replicas using yaml manifest file
+3 - Verify the first version of deployment has been deployed and rolled out
+4 - Update the manifest to use 3 replicas and image to use the latest version [TODO]
+5 - Verify the second version of deployment has been deployed and rolled out
+6 - Rollback to the previous version
+9 - Manually scale to use 5 replicas
+10 - Manually scale to use 1 replica
+
+Services
+===========================================================================
+
+Demo
+====
+1 - Create a service (color) of type nodeport and expose port 8080 and target port 80, with the selector app=colorful
+2 - Create an nginx pod which prints echo Green > /usr/share/nginx/html/index.html & expose on port 80 and label app=colorful
+3 - Create an nginx pod which prints echo "Color: Blue" > /usr/share/nginx/html/index.html & expose on port 80 label app=colorful
+
+Green-dockerfile
+-----------------------
+FROM nginx:1.7.9
+RUN echo Green > /usr/share/nginx/html/index.html
+
+Blue-dockerfile
+-----------------------
+FROM nginx:1.7.9
+RUN echo Green > /usr/share/nginx/html/index.html
+
+Labs
+====
+
+Do the same steps as above but using deployments and services together
+
+Volumes
+================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+

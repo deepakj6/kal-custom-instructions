@@ -1,0 +1,174 @@
+= Building your first container 
+:stylesheet: boot-flatly.css
+:nofooter:
+:data-uri:
+:linkattrs:
+:icons: font
+
+== Learning Outcomes
+After completing the lab, you will be able to:
+
+ . Describe how to create Docker container
+ . Describe how to write a docker file
+ . Run your Spring boot application as a docker container
+ 
+
+== Dockerizing 
+
+. Create a new file named `Dockerfile` inside root project folder
+
+. Add instructions to download the base image. In order to run Java application using JDK 11, use - adoptopenjdk:11-jre-openj9
+. Add instructions to copy the dependencies & build artifacts(jar/war) from the local directory into the docker image
+. Provide a command or an entrypoint to start the application within the docker container
+
+
++
+.Creating the docker file
+
+[source, java]
+---------------
+cd ~/workspace/pages
+
+touch Dockerfile 
+---------------
+
+. Update Dockerfile
+
++
+[source, java]
+---------------
+FROM adoptopenjdk:11-jre-openj9
+ARG JAR_FILE=build/libs/page*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+---------------
+
+
+. Building the Docker Image
+
++ 
+The next step is to build the docker image.
+To ensure that the jar file is available locally build the project if not already done
+
++ 
+[source,java]
+---------------------------------------------------------------------
+./gradlew clean build
+---------------------------------------------------------------------
+
+. Build the docker image
+
++
+[source,java]
+---------------------------------------------------------------------
+docker build -t pages .
+---------------------------------------------------------------------
+
++
+WARNING: If you get an error containing `Permission Denied while trying to connect to the docker daemon socket` you will need to execute the command
+`sudo chmod 666 /var/run/docker.sock`
+. After it finishes, run this to see the image it has built
++
+
+[source,java]
+---------------------------------------------------------------------
+docker images
+---------------------------------------------------------------------
+
+. Run the image as a container
++
+
+[source,java]
+---------------------------------------------------------------------
+docker run -p 8080:8080 pages
+---------------------------------------------------------------------
+
++
+In the run command, we have specified that the port 8080 on the container should be mapped to the port 8080 on the Host OS.
++
+Once the application is started, you should be able to access it at link:http://localhost:8080["http://localhost:8080", window="_blank"] 
++
+The container runs in the foreground. You can run the  container in the background using -d option. 
++
+Stop the process by pressing `CTRL + C`
+Pressing `CTRL + C` sometimes might not stop the process. You will need to manually terminate the container.
+
+.. Use `docker ps` and fetch the container id.
+.. `docker kill <container-id>`
+
+== Pushing the docker image to docker hub
+
+. Login with your Docker ID to push or pull images from Docker Hub. 
+
++
+If you don't have a Docker ID, head over to
+link:https://hub.docker.com["docker hub", window="_blank"] to create one, before proceeding futher.
+
++
+[source,java]
+----------------
+docker login
+----------------
+
+. Tag the image using the notation `docker-username/repository:tag`
+
++
+[source,java]
+-------------
+docker tag pages [docker-username]/pages:1.0
+-------------
+Make sure to replace username with your docker id in the above command.
+
+
+. Verify the newly created tagged image
++
+[source,java]
+---------------
+docker images
+---------------
+
+. Push the image to docker hub
+
++
+[source,java]
+--------------
+docker push [docker-username]/pages:1.0
+--------------
+
+. Pull the image from docker hub and test it on local machine. Stop the process after you test it.
+
++
+[source,java]
+---------------------------------------------------------------------
+docker run -p 8080:8080 [docker-username]/pages:1.0
+
+---------------------------------------------------------------------
+
+. Commit your code to your github repository
+
++
+[source,java]
+---------------------------------------------------------------------
+git add .
+git commit -m "Dockerize"
+git push -u origin master 
+---------------------------------------------------------------------
+
+== Troubleshooting guide
+
+. `docker container list --all`.  This will show both running and stopped containers.
+   Note the `CONTAINER-ID` and/or the `NAMES` of the failed container.  We'll need it next.
+. `docker container logs CONTAINER-ID`. This shows the console output from the failed container.  
+. To know more about docker commands Run `docker -h`
+
+
+
+=== Resource clean up
+
+. `docker container list` - View running containers.  Note the `CONTAINER ID` and/or the `NAMES` of the running container.
+. `docker container stop CONTAINER-ID` .This stops the container.
+. `docker container list` - Verify that the container is now stopped.
+. `docker container rm CONTAINER-ID` - Delete the container.
+. `docker image list`.  The image is still there, only the container we created is removed.
+.  Verify that the docker image exists with the right tag in link:https://hub.docker.com["docker hub", window="_blank"]
+

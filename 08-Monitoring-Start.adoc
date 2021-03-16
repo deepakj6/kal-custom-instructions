@@ -1,0 +1,194 @@
+= Logging and Monitoring in Kubernetes
+:stylesheet: boot-flatly.css
+:nofooter:
+:data-uri:
+
+== Learning Outcomes
+After completing the lab, you will be able to:
+
+ . Externalize log messages
+ . Configure application to use health indicators like actuators
+ . Configure observability using probes
+ . Access container logs for debugging and troubleshooting
+
+ 
+== Configure logging for pages application
+
+. Update the `pages` deployment manifest file by setting the container image to `public.ecr.aws/z8i8u8l0/kal:monitor`
+. Update the `pages` deployment manifest file to add `volume`,
+`volume mount` & `logger` configuration settings
+
++
+*Specification:*
+
++
+[horizontal]
+name:: node-dir
+type:: hostpath
+path::  /[student-name]
+mountPath:: /[student-name]
+EnvironmentVariables::
+* DEBUG: "true"
+* LOGGING_FILE_NAME: "[student-name]/logs/app.log"
+* LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: debug
+* LOGGING_LEVEL_ROOT: debug
+* MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: *
+
+
+. Introduce `Liveness probe` to instruct the `kubelet` on when to kill the unhealthy container, subjected to its restart policy.
++
+*Specification:*
++
+[horizontal]
+type:: httpGet
+path:: /actuator/health
+port::  8080
+initialDelaySeconds:: 15
+periodSeconds:: 30
+
+. Introduce `Readiness probe` which indicates whether the application is ready to respond to requests.
++
+*Specification:*
++
+[horizontal]
+
+type:: tcpSocket
+port::  8080
+initialDelaySeconds:: 15
+periodSeconds:: 30
+
+
+=== Reference Code Snippet
+
+`Pages` deployment manifest file with environment variables, volumes, volumeMounts, probes
+
+
+[source,yaml]
+--------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pages
+    tier: service
+  name: pages
+  namespace: [student-name]
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pages
+      tier: service
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: pages
+        tier: service
+    spec:
+      containers:
+        - image: public.ecr.aws/z8i8u8l0/kal:service
+          name: pages
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PAGE_CONTENT
+              valueFrom:
+                configMapKeyRef:
+                  name: pages-config-map
+                  key: PAGE_CONTENT
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://pages-mysql/pages?useSSL=false
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "root"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-pass
+                  key: password
+            - name: DEBUG
+              value: "true"
+            - name: LOGGING_FILE_NAME
+              value: "[student-name]/logs/app.log"
+            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB
+              value: debug
+            - name: LOGGING_LEVEL_ROOT
+              value: debug
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "*"
+          volumeMounts:
+            - name: node-dir
+              mountPath: /[student-name]
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+      volumes:
+        - name: node-dir
+          hostPath:
+            path: /[student-name]
+--------
+
+== Viewing Logs in K8s
+
+. Ensure kubectl context is set to minikube.
+
+. Use `kubectl logs [pod-name]` for fetching application logs. Refer to link:http://kubernetes.io/docs["http://kubernetes.io/docs", window="_blank"]   for more information.
+
+. Type the command `minikube dashboard` , which can also be used to view the logs.
+
+== Debug and troubleshoot
+. Delete and recreate the `mysql` deployment
++
+.Ensure your `kubectl` context is set to minikube.
+
++ 
+[source,java]
+--------
+
+kubectl config current-context
+
+kubectl config get-contexts
+
+kubectl config use-context minikube
+
+kubectl config set-context --current --namespace [student-name]
+
+kubectl delete deploy mysql
+
+kubectl apply -f deployment/mysql-deployment.yaml
+
+kubectl get deploy
+--------
+
+. Try to access the pages application
+
++ 
+[source,text]
+--------
+
+kubectl port-forward svc/pages 8080:8080 
+
+curl http://locahost:8080/pages
+
+--------
+
+. What error do you see?
+
+. Find out the root cause of the problem and fix it.
+
+== Advanced usecase challenges
+
+. Implement centralized logging by aggregating the logs and persisting it from all the pods and nodes into a single datastore. 
+. Add instrumentation such as counters and guages
+. Implement correlation of events by using correlation ids for all the requests 
+. Implement service mesh pattern for designing a unified logging layer.
+

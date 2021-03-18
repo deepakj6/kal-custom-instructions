@@ -30,7 +30,7 @@ image::deployment-architecture.png[]
 
 == Kubernetize
 
-. Update the pages deployment manifest file by setting the container image to `public.ecr.aws/z8i8u8l0/kal:service`
+. Update the pages deployment manifest file by setting the container image to `dellcloud/pages:service`
 
 . The pages service needs to connect to the mysql database. The communication happens through  `mysql service` that we created in the previous lab.
 
@@ -48,10 +48,34 @@ SPRING_DATASOURCE_URL::  jdbc:mysql://mysql/pages
 SPRING_DATASOURCE_USERNAME:: "root"
 SPRING_DATASOURCE_PASSWORD::  Value from secret name `mysql` with key name `password`
 
+. Create a config map object with the following specifications.
++
+[source, textmate]
+-------------
+name -> pages
+namespace -> [student-name]
+config data key-value pair:
+PAGE_CONTENT -> "Green-Pages from Yellow World!"
+-------------
 
+. Create `~/workspace/kubernetes-manifests/pages/config.yaml`
 
-[start=3]
-. The updated `~./workspace/kubernetes-manifests/pages/deployment.yaml` manifest file
++
+[source, java]
+-------------------------------------
+apiVersion: v1
+data:
+  PAGE_CONTENT: Green-Pages coming from Yellow-World!
+kind: ConfigMap
+metadata:
+  name: pages
+  namespace: [student-name]
+
+-------------------------------------
+
+[start=5]
+
+. The updated `~/workspace/kubernetes-manifests/pages/deployment.yaml` manifest file with config map
 
 
 +
@@ -79,7 +103,7 @@ spec:
         tier: service
     spec:
       containers:
-        - image: public.ecr.aws/z8i8u8l0/kal:service
+        - image: dellcloud/pages:service
           name: pages
           ports:
             - containerPort: 8080
@@ -107,28 +131,50 @@ spec:
 
 == Testing locally on minikube
 
-. Switch the kubectl context to minikube - `kubectl config use-context minikube`
+. Stop the minikube if it is running and start it by setting configuration property to pull the images when they do not have a valid certificate
++
+[source, shell script]
+------------------
+minikube stop
+minikube start --driver=virtualbox --insecure-registry=true
+------------------
+
+. Switch the kubectl context to minikube
++
+[source, shell script]
+------------------
+kubectl config use-context minikube
+------------------
+
 +
 Set the kubectl context namespace to your namespace - `kubectl config set-context --current --namespace [student-name]`
 
 . Since the pages service is updated with new labels, updating the immutable propery of the service is not allowed. Delete the service
 
 +
-`kubectl delete svc pages`
+[source, shell script]
+------------------
+kubectl delete svc pages
+------------------
 
-. Create the service 
+. Create the config map, service and deployment
 
 +
-`kubectl apply -f deployment/pages-service.yaml`
-
-. Create pages deployment.
-+
-`kubectl apply -f deployment/pages-deployment.yaml`
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/config.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml
+------------------
 
 +
 . Port forward to connect to pages service running inside K8s from the local machine
+
 +
-`kubectl port-forward svc/pages 8080:8080`
+[source, shell script]
+------------------
+kubectl port-forward svc/pages 8080:8080
+------------------
 
 . Test the pages application by performing CRUD operations using curl/postman. 
  Refer <<07-Pages-Curl-Commands.adoc#pages-curl-section, Pages Curl Guide>> for testing.
@@ -136,4 +182,4 @@ Set the kubectl context namespace to your namespace - `kubectl config set-contex
 
 == Task Accomplished
 
-We completed integrating the service-tier with the database-tier & successfully deployed a two-tier cloud native application to K8s cluster.
+We completed integrating the service-tier with the database-tier & successfully deployed a two-tier cloud native application to K8s cluster

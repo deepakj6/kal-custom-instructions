@@ -374,7 +374,7 @@ table {
 <h2 id="eks">Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><code>.github/workflows/pipeline.yaml</code></p>
+<p><code>~/workspace/pages/.github/workflows/pipeline.yaml</code></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -433,9 +433,9 @@ jobs:
         run: |
           aws eks --region ap-south-<span style="color:#00D">1</span> update-kubeconfig --name dees-cloud
           kubectl config get-contexts
-          kubectl apply -f deployment/pages-namespace.yaml
-          kubectl apply -f deployment/pages-service.yaml
-          kubectl apply -f deployment/pages-deployment.yaml</code></pre>
+          kubectl apply -f deployment/namespace.yaml
+          kubectl apply -f deployment/service.yaml
+          kubectl apply -f deployment/deployment.yaml</code></pre>
 </div>
 </div>
 </div>

@@ -26,7 +26,7 @@ After completing the lab, you will be able to:
 
 . In order to create the database and schema, we need the DDL and DML scripts.
 
-. Create `~workspace/pages/database/create_database.sql` which contains sql script for creating the database `pages` and user `pages_user` for developing and testing locally with following contents
+. Create `~/workspace/pages/database/create_database.sql` which contains sql script for creating the database `pages` and user `pages_user` for developing and testing locally with following contents
 
 +
 
@@ -42,7 +42,7 @@ GRANT ALL PRIVILEGES ON pages.* TO 'pages_user'@'%';
 ----------
 
 
-. Create `~workspace/pages/database/migrations/V1__initial_schema.sql` which contains the script for creating the schema with following contents
+. Create `~/workspace/pages/database/migrations/V1__initial_schema.sql` which contains the script for creating the schema with following contents
 
 
 +
@@ -67,6 +67,7 @@ default charset = utf8;
 +
 [source,java]
 ----------
+cd ~/workspace/pages
 mysql -uroot < database/create_database.sql
 ----------
 They do not have any tables yet.
@@ -218,7 +219,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mysql
-  namespace: student-name
+  namespace: [student-name]
   labels:
     app: pages
     tier: database
@@ -239,14 +240,39 @@ spec:
 
 +
 [horizontal]
-name:: configmap
+name:: mysql
 namespace:: [your namespace]
 data::
 * spring.datasource.username: root
 * V1\__inital_schema.sql: This should be the content of your `~/workspace/pages/database/migrations/V1__inital_schema.sql`
 
+
+
+
 +
-If you are not sure how to create the configmap, refer to the earlier examples.
+[source, yaml]
+------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+name: mysql
+namespace: [student-name]
+data:
+spring.datasource.username: root
+
+  V1__inital_schema.sql: |
+    USE pages;
+    create table pages(
+    id bigint(20) not null auto_increment,
+    business_name VARCHAR(50),
+    address VARCHAR(50),
+    category_id bigint(20),
+    contact_number VARCHAR(50),
+    primary key (id)
+    )
+    engine = innodb
+    default charset = utf8;
+------------------
 
 .  Create the file `~/workspace/kubernetes-manifests/mysql/flyway-job.yaml` containing the manifest for running a K8s job to execute flyway migration commands
 +
@@ -284,7 +310,7 @@ spec:
             - name: FLYWAY_PLACEHOLDERS_USERNAME
               valueFrom:
                 configMapKeyRef:
-                  name: configmap
+                  name: mysql
                   key: spring.datasource.username
             - name: FLYWAY_PLACEHOLDERS_PASSWORD
               valueFrom:
@@ -297,14 +323,26 @@ spec:
       volumes:
         - name: sql
           configMap:
-            name: configmap
+            name: mysql
       restartPolicy: Never
 ------------------
 
 == Testing locally
 
 . Switch the `kubectl` context to `minikube` and set the context to point to your namespace.
-. Create all the  5 resources inside your namespace. Wait for some time for the migration job to complete. Verify the resources were created without errors. 
+. Create all the  5 resources inside your namespace. Wait for some time for the migration job to complete. Verify the resources were created without errors.
+
++
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/secret.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/configmap.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/deployment.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/flyway-job.yaml
+------------------
+
+
 . To verify the database was created with the table `pages` use `kubectl exec` to get a shell to the `mysql` container +
 +
 [source,textmate]

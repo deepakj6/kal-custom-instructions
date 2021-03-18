@@ -7,7 +7,8 @@ window.onload = function(){
 	//var isLanguage = pre[i].children[0].className.indexOf('language-');
 	//if (isLanguage === 0)
     if (node.getAttribute("data-lang") == "java" || node.getAttribute("data-lang") == "yaml"
-     || node.getAttribute("data-lang") == "xml" || node.getAttribute("data-lang") == "shell script")
+     || node.getAttribute("data-lang") == "xml" || node.getAttribute("data-lang") == "shell script"
+     || node.getAttribute("data-lang") == "sql")
 	 {
         var button  = document.createElement('button');
         button.className = 'copy-button';

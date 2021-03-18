@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="font-awesome.min.css" />
   <script src="jquery-3.5.1.min.js"></script>
   <script src="copy.js"></script>
+  <script src="copy.js"></script>
 <style>
 /* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
@@ -420,7 +421,7 @@ There are various automation tools for implementing the database migrations. We 
 <p>In order to create the database and schema, we need the DDL and DML scripts.</p>
 </li>
 <li>
-<p>Create <code>~workspace/pages/database/create_database.sql</code> which contains sql script for creating the database <code>pages</code> and user <code>pages_user</code> for developing and testing locally with following contents</p>
+<p>Create <code>~/workspace/pages/database/create_database.sql</code> which contains sql script for creating the database <code>pages</code> and user <code>pages_user</code> for developing and testing locally with following contents</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="sql"><span style="color:#B06;font-weight:bold">DROP</span> <span style="color:#339;font-weight:bold">DATABASE</span> <span style="color:#080;font-weight:bold">IF</span> <span style="color:#080;font-weight:bold">EXISTS</span> pages;
@@ -434,7 +435,7 @@ IDENTIFIED <span style="color:#080;font-weight:bold">BY</span> <span style="back
 </div>
 </li>
 <li>
-<p>Create <code>~workspace/pages/database/migrations/V1__initial_schema.sql</code> which contains the script for creating the schema with following contents</p>
+<p>Create <code>~/workspace/pages/database/migrations/V1__initial_schema.sql</code> which contains the script for creating the schema with following contents</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="sql">USE pages;
@@ -455,7 +456,8 @@ contact_number <span style="color:#0a8;font-weight:bold">VARCHAR</span>(<span st
 <p>Create the database locally</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">mysql -uroot &lt; database/create_database.sql</code></pre>
+<pre class="CodeRay highlight"><code data-lang="java">cd ~/workspace/pages
+mysql -uroot &lt; database/create_database.sql</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -735,7 +737,7 @@ EnvironmentVariables
 <span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Service</span></span>
 <span style="color:#606">metadata</span>:
   <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
-  <span style="color:#606">namespace</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">student-name</span></span>
+  <span style="color:#606">namespace</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[student-name]</span></span>
   <span style="color:#606">labels</span>:
     <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
     <span style="color:#606">tier</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">database</span></span>
@@ -761,7 +763,7 @@ EnvironmentVariables
 name
 </td>
 <td class="hdlist2">
-<p>configmap</p>
+<p>mysql</p>
 </td>
 </tr>
 <tr>
@@ -791,8 +793,29 @@ data
 </tr>
 </table>
 </div>
-<div class="paragraph">
-<p>If you are not sure how to create the configmap, refer to the earlier examples.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
+<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">ConfigMap</span></span>
+<span style="color:#606">metadata</span>:
+<span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
+<span style="color:#606">namespace</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[student-name]</span></span>
+<span style="color:#606">data</span>:
+<span style="color:#606">spring.datasource.username</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">root</span><span style="color:#D20">
+
+  V1__inital_schema.sql: |
+    USE pages;
+    create table pages(
+    id bigint(20) not null auto_increment,
+    business_name VARCHAR(50),
+    address VARCHAR(50),
+    category_id bigint(20),
+    contact_number VARCHAR(50),
+    primary key (id)
+    )
+    engine = innodb
+    default charset = utf8;</span></span></code></pre>
+</div>
 </div>
 </li>
 <li>
@@ -831,7 +854,7 @@ data
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: FLYWAY_PLACEHOLDERS_USERNAME</span></span>
               <span style="color:#606">valueFrom</span>:
                 <span style="color:#606">configMapKeyRef</span>:
-                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">configmap</span></span>
+                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
                   <span style="color:#606">key</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">spring.datasource.username</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: FLYWAY_PLACEHOLDERS_PASSWORD</span></span>
               <span style="color:#606">valueFrom</span>:
@@ -844,7 +867,7 @@ data
       <span style="color:#606">volumes</span>:
         - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: sql</span></span>
           <span style="color:#606">configMap</span>:
-            <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">configmap</span></span>
+            <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
       <span style="color:#606">restartPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Never</span></span></code></pre>
 </div>
 </div>
@@ -863,6 +886,15 @@ data
 </li>
 <li>
 <p>Create all the  5 resources inside your namespace. Wait for some time for the migration job to complete. Verify the resources were created without errors.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/mysql/secret.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/configmap.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/deployment.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/flyway-job.yaml</code></pre>
+</div>
+</div>
 </li>
 <li>
 <p>To verify the database was created with the table <code>pages</code> use <code>kubectl exec</code> to get a shell to the <code>mysql</code> container<br></p>

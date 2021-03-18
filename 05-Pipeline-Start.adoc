@@ -30,7 +30,7 @@ image::initial-deployment-architecture.png[]
 
 . Get your cluster namespace from the instructors, which will be used in the next steps.
 
-. Create a `~./workspace/kubernetes-manifests/pages/namespace.yaml` with the below manifest file.
+. Create a `~/workspace/kubernetes-manifests/pages/namespace.yaml` with the below manifest file.
 
 +
 [source,yaml]
@@ -42,7 +42,7 @@ metadata:
 
 -------------
 
-.  Create `~./workspace/kubernetes-manifests/pages/deployment.yaml` from the root project folder
+.  Create `~/workspace/kubernetes-manifests/pages/deployment.yaml` from the root project folder
 
 +
 [source,yaml]
@@ -73,7 +73,7 @@ spec:
 
 -------------
 
-. Create `~./workspace/kubernetes-manifests/pages/service.yaml` to expose the deployment as type `NodePort`
+. Create `~/workspace/kubernetes-manifests/pages/service.yaml` to expose the deployment as type `NodePort`
 +
 [source,yaml]
 -------------
@@ -108,8 +108,8 @@ spec:
 [source,java]
 -------------------
 kubectl create namespace [student-name]
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml
 -------------------
 
 . Verify the created objects
@@ -179,12 +179,69 @@ AWS_SECRET_ACCESS_KEY
 
 . The aws access key id and secret will be provided to you.
 
-. Create `.github/workflows/pipeline.yaml` in the root project directory with the configuration. Refer to <<EKS-Pipeline.adoc#eks, pipeline.yaml>>
+. Create `~/workspace/pages/.github/workflows/pipeline.yaml` with the CI/CD configuration <<EKS-Pipeline.adoc#eks, pipeline.yaml>>
 
-. Update the tag name in `pages-deployment.yaml` file to `pipeline`
+. Copy the contents of the pages manifest into a new directory inside pages to be used for CI/CD
++
+[source, shell script]
+-----------
+ mkdir ~/workspace/pages/deployment
+ cp ~/workspace/kubernetes-manifests/pages/* ~/workspace/pages/deployment
+-----------
+
+. Update the image tag name to `pipeline` in the `pages` deployment
+
+
 . Push your code to git repository
 . Navigate to `Actions` tab in the github dashboard to see the progress of the pipeline.
+
+=== Switch to the production cluster
+
+. Get the list of clusters configured inside `kubeconfig` file
+
++
+[source, shell script]
+-------------------
+kubectl config get-contexts
+-------------------
+
+. Copy the full name of the cluster emitted from command above.
+If you are using EKS (public cloud), it might look similar to *arn:aws:*---*:cluster/*cluser-name**
++
+Check with the instructors for the cluster name if you get more than one cluster apart from `minikube` from the previous command
+
+. Switch the `kubectl` context to point to the production cluster
+
+
++
+[source, shell script]
+-------------------
+kubectl config use-context [name of the cluster]
+
+kubectl config set-context --current --namespace [student-name]
+
+-------------------
+
+. Verify that a new image for `pages` with the tag `pipeline` was created in your `dockerhub` account
 . Upon successful completion of the workflow, you should be able to see the deployment and other objects in K8s cluster.
+
++
+[source, shell script]
+-------------------
+kubectl get deploy
+kubectl get svc
+kubectl get po
+
+-------------------
+. Test the application once as you did earlier, to verify that it is behaving as expected
+
+. Switch back to the minikube cluster before heading to the next lab
++
+[source, shell script]
+-------------------
+kubectl config use-context minikube
+-------------------
+
 
 == Discussions: Advanced Usecases
 . Automating security concerns

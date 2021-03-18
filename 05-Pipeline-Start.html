@@ -425,7 +425,7 @@ We will be leveraging <code>Github Actions</code> which comes integrated with Gi
 <p>Get your cluster namespace from the instructors, which will be used in the next steps.</p>
 </li>
 <li>
-<p>Create a <code>~./workspace/kubernetes-manifests/pages/namespace.yaml</code> with the below manifest file.</p>
+<p>Create a <code>~/workspace/kubernetes-manifests/pages/namespace.yaml</code> with the below manifest file.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
@@ -436,7 +436,7 @@ We will be leveraging <code>Github Actions</code> which comes integrated with Gi
 </div>
 </li>
 <li>
-<p>Create <code>~./workspace/kubernetes-manifests/pages/deployment.yaml</code> from the root project folder</p>
+<p>Create <code>~/workspace/kubernetes-manifests/pages/deployment.yaml</code> from the root project folder</p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">apps/v1</span></span>
@@ -466,7 +466,7 @@ We will be leveraging <code>Github Actions</code> which comes integrated with Gi
 </div>
 </li>
 <li>
-<p>Create <code>~./workspace/kubernetes-manifests/pages/service.yaml</code> to expose the deployment as type <code>NodePort</code></p>
+<p>Create <code>~/workspace/kubernetes-manifests/pages/service.yaml</code> to expose the deployment as type <code>NodePort</code></p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
@@ -506,8 +506,8 @@ We will be leveraging <code>Github Actions</code> which comes integrated with Gi
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java">kubectl create namespace [student-name]
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml</code></pre>
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml</code></pre>
 </div>
 </div>
 </li>
@@ -590,10 +590,19 @@ AWS_SECRET_ACCESS_KEY</code></pre>
 <p>The aws access key id and secret will be provided to you.</p>
 </li>
 <li>
-<p>Create <code>.github/workflows/pipeline.yaml</code> in the root project directory with the configuration. Refer to <a href="EKS-Pipeline.html#eks">pipeline.yaml</a></p>
+<p>Create <code>~/workspace/pages/.github/workflows/pipeline.yaml</code> with the CI/CD configuration <a href="EKS-Pipeline.html#eks">pipeline.yaml</a></p>
 </li>
 <li>
-<p>Update the tag name in <code>pages-deployment.yaml</code> file to <code>pipeline</code></p>
+<p>Copy the contents of the pages manifest into a new directory inside pages to be used for CI/CD</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script"> mkdir ~/workspace/pages/deployment
+ cp ~/workspace/kubernetes-manifests/pages/* ~/workspace/pages/deployment</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Update the image tag name to <code>pipeline</code> in the <code>pages</code> deployment</p>
 </li>
 <li>
 <p>Push your code to git repository</p>
@@ -601,10 +610,63 @@ AWS_SECRET_ACCESS_KEY</code></pre>
 <li>
 <p>Navigate to <code>Actions</code> tab in the github dashboard to see the progress of the pipeline.</p>
 </li>
+</ol>
+</div>
+<div class="sect2">
+<h3 id="_switch_to_the_production_cluster">Switch to the production cluster</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Get the list of clusters configured inside <code>kubeconfig</code> file</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl config get-contexts</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Copy the full name of the cluster emitted from command above.
+If you are using EKS (public cloud), it might look similar to <strong>arn:aws:</strong>---<strong>:cluster/*cluser-name</strong>*</p>
+<div class="paragraph">
+<p>Check with the instructors for the cluster name if you get more than one cluster apart from <code>minikube</code> from the previous command</p>
+</div>
+</li>
+<li>
+<p>Switch the <code>kubectl</code> context to point to the production cluster</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl config use-context [name of the cluster]
+
+kubectl config set-context --current --namespace [student-name]</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify that a new image for <code>pages</code> with the tag <code>pipeline</code> was created in your <code>dockerhub</code> account</p>
+</li>
 <li>
 <p>Upon successful completion of the workflow, you should be able to see the deployment and other objects in K8s cluster.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl get deploy
+kubectl get svc
+kubectl get po</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Test the application once as you did earlier, to verify that it is behaving as expected</p>
+</li>
+<li>
+<p>Switch back to the minikube cluster before heading to the next lab</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl config use-context minikube</code></pre>
+</div>
+</div>
 </li>
 </ol>
+</div>
 </div>
 </div>
 </div>

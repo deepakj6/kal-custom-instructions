@@ -16,7 +16,7 @@ In addition, you will be exposed to some of the Agile practices such as - contin
 . link:01-Hello-Start.html#["Building a Spring Boot Application", window="_blank"]
 . link:02-Docker-Start.html#["Dockerize", window="_blank"]
 . link:03-Kubernetes-Pods.html#["Kubernetize", window="_blank"]
-. link:04-Kubernetes-Competencies.html#["Working with Config Maps", window="_blank"]
+. link:04-Kubernetes-Competencies.html#["Kubernetes Domains", window="_blank"]
 . link:05-Pipeline-Start.html#["Build Pipelines (CI/CD)", window="_blank"]
 . link:06-DatabaseTier-Start.html#["Design & Develop Database Tier", window="_blank"]
 . link:07-Service-Tier-Start.html#["Design & Develop Service Tier", window="_blank"]

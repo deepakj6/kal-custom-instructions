@@ -6,7 +6,7 @@
 
 [#eks,refText=eks]
 == Configuration
-`.github/workflows/pipeline.yaml`
+`~/workspace/pages/.github/workflows/pipeline.yaml`
 [source,java]
 ----------
 name: Pages Pipeline
@@ -64,7 +64,7 @@ jobs:
         run: |
           aws eks --region ap-south-1 update-kubeconfig --name dees-cloud
           kubectl config get-contexts
-          kubectl apply -f deployment/pages-namespace.yaml          
-          kubectl apply -f deployment/pages-service.yaml
-          kubectl apply -f deployment/pages-deployment.yaml
+          kubectl apply -f deployment/namespace.yaml
+          kubectl apply -f deployment/service.yaml
+          kubectl apply -f deployment/deployment.yaml
 ----------

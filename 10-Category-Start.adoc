@@ -13,8 +13,8 @@ After completing the lab, you will be able to:
 
 
 == Deploying category microservice to K8s
-
-. Observe the `~/workspace/kubernetes-manifests/mongo` and `~/workspace/kubernetes-manifests/category` directories
+. Download link:https://cloud-native-labs.s3.ap-south-1.amazonaws.com/J21/tailorlabguide/category.zip[category microservice manifest files, window="_blank"] and extract to `~/workspace/kubernetes-manifests/category`
+. Download link:https://cloud-native-labs.s3.ap-south-1.amazonaws.com/J21/tailorlabguide/mongo.zip[mongodb manifest files, window="_blank"] and extract to `~/workspace/kubernetes-manifests/mongo`
 . Walkthrough the manifest files & understand the solution to the deployment architecture.
 . Before we start deploying, replace `[student-name]` with your namespace in all the manifest files.
 

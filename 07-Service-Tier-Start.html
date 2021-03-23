@@ -6,6 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
 <title>Pages microservice - Design and Develop Service Tier</title>
+  <script src="clipboard.min.js"></script>
+  <script src="jquery-3.5.1.min.js"></script>
+  <script src="velocity.min.js"></script>
+  <link rel="stylesheet" href="font-awesome.min.css" />
+  <script src="jquery-3.5.1.min.js"></script>
+  <script src="copy.js"></script>
 <style>
 /* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
@@ -553,7 +559,7 @@ metadata:
                   <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
                   <span style="color:#606">key</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">PAGE_CONTENT</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_URL</span></span>
-              <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">jdbc:mysql://mysql/pages?useSSL=false</span></span>
+              <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">jdbc:mysql://mysql/pages?allowPublicKeyRetrieval=true&amp;useSSL=false</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_USERNAME</span></span>
               <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">root</span><span style="color:#710">&quot;</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_PASSWORD</span></span>
@@ -561,6 +567,30 @@ metadata:
                 <span style="color:#606">secretKeyRef</span>:
                   <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
                   <span style="color:#606">key</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">password</span></span></code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>The <code>pages</code> service manifest <code>~/workspace/kubernetes-manifests/pages/service.yaml</code> should be updated with the right labels and selectors to be applied to the <code>pages</code> deployment</p>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
+<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Service</span></span>
+<span style="color:#606">metadata</span>:
+  <span style="color:#606">labels</span>:
+    <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
+    <span style="color:#606">tier</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">service</span></span>
+  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
+  <span style="color:#606">namespace</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[student-name]</span></span>
+<span style="color:#606">spec</span>:
+  <span style="color:#606">ports</span>:
+  - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">port: 8080</span></span>
+    <span style="color:#606">protocol</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">TCP</span></span>
+    <span style="color:#606">targetPort</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">8080</span></span>
+  <span style="color:#606">selector</span>:
+    <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
+    <span style="color:#606">tier</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">service</span></span>
+  <span style="color:#606">type</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">NodePort</span></span></code></pre>
 </div>
 </div>
 </li>
@@ -640,5 +670,82 @@ Refer <a href="07-Pages-Curl-Commands.html#pages-curl-section">Pages Curl Guide<
 </div>
 </div>
 </div>
+<script>
+(function(){
+
+	// Get the elements.
+	// - the 'pre' element.
+	// - the 'div' with the 'paste-content' id.
+
+	var pre = document.getElementsByTagName('pre');
+	var pasteContent = document.getElementById('paste-content');
+
+	// Add a copy button in the 'pre' element.
+	// which only has the className of 'language-'.
+
+	for (var i = 0; i < pre.length; i++) {
+		var isLanguage = pre[i].children[0].className.indexOf('language-');
+
+		if ( isLanguage === 0 ) {
+			var button  = document.createElement('button');
+			button.className = 'copy-button';
+			button.textContent = 'COPY';
+			button.style.float = 'right';
+
+            var image = document.createElement('img');
+			image.src = "clipboard.svg";
+			image.width = "21";
+			image.height = "27";
+
+			button.appendChild(image);
+			pre[i].appendChild(button);
+
+		}
+	};
+
+	// Run Clipboard
+
+	var copyCode = new Clipboard('.copy-button', {
+		target: function(trigger) {
+			return trigger.previousElementSibling;
+    }
+	});
+
+	// On success:
+	// - Change the "Copy" text to "Copied".
+	// - Swap it to "Copy" in 2s.
+	// - Lead user to the "contenteditable" area with Velocity scroll.
+
+	copyCode.on('success', function(event) {
+		event.clearSelection();
+		//event.trigger.textContent = 'Copied';
+		event.trigger.firstChild.textContent = 'Copied!';
+
+		window.setTimeout(function () {
+            event.trigger.firstChild.textContent = 'COPY';
+		}, 2000);
+
+		$.Velocity(pasteContent, 'scroll', {
+			duration: 1000
+		});
+	});
+
+	// On error (Safari):
+	// - Change the  "Press Ctrl+C to copy"
+	// - Swap it to "Copy" in 2s.
+
+	copyCode.on('error', function(event) {
+		event.trigger.textContent = 'Press "Ctrl + C" to copy';
+		window.setTimeout(function() {
+			event.trigger.textContent = 'Copy';
+		}, 5000);
+	});
+
+
+
+})();
+</script>
+<!--analytics-->
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 </body>
 </html>

@@ -114,7 +114,7 @@ spec:
                   name: pages
                   key: PAGE_CONTENT
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mysql/pages?useSSL=false
+              value: jdbc:mysql://mysql/pages?allowPublicKeyRetrieval=true&useSSL=false
             - name: SPRING_DATASOURCE_USERNAME
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -122,6 +122,32 @@ spec:
                 secretKeyRef:
                   name: mysql
                   key: password
+
+------------------
+
+. The `pages` service manifest `~/workspace/kubernetes-manifests/pages/service.yaml` should be updated with the right labels and selectors to be applied to the `pages` deployment
+
+
++
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pages
+    tier: service
+  name: pages
+  namespace: [student-name]
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: pages
+    tier: service
+  type: NodePort
 
 ------------------
 

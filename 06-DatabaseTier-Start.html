@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="font-awesome.min.css" />
   <script src="jquery-3.5.1.min.js"></script>
   <script src="copy.js"></script>
-  <script src="copy.js"></script>
 <style>
 /* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
@@ -645,7 +644,7 @@ volume Type
 mountPath
 </td>
 <td class="hdlist2">
-<p>mountPath: /docker-entrypoint-initdb.d</p>
+<p>mountPath: /var/lib/mysql</p>
 </td>
 </tr>
 <tr>
@@ -663,9 +662,6 @@ EnvironmentVariables
 </li>
 <li>
 <p>MYSQL_DATABASE: pages</p>
-</li>
-<li>
-<p>MYSQL_USER: root</p>
 </li>
 <li>
 <p>MYSQL_ROOT_PASSWORD: value from a secret called mysql-pass with key-name as password.</p>
@@ -715,14 +711,12 @@ EnvironmentVariables
               <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">3306</span><span style="color:#710">&quot;</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: MYSQL_DATABASE</span></span>
               <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">pages</span><span style="color:#710">&quot;</span></span>
-            - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: MYSQL_USER</span></span>
-              <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">root</span><span style="color:#710">&quot;</span></span>
-          <span style="color:#606">ports</span>:
+           <span style="color:#606">ports</span>:
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">containerPort: 3306</span></span>
               <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
           <span style="color:#606">volumeMounts</span>:
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: mysql-persistent-storage</span></span>
-              <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/docker-entrypoint-initdb.d</span></span>
+              <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/var/lib/mysql</span></span>
       <span style="color:#606">volumes</span>:
         - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: mysql-persistent-storage</span></span>
           <span style="color:#606">emptyDir</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">{}</span></span></code></pre>

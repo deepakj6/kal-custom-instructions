@@ -401,7 +401,7 @@ table {
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Observe the <code>~./workspace/kubernetes-manifests/mongo</code> and <code>~./workspace/kubernetes-manifests/category</code> directories</p>
+<p>Observe the <code>~/workspace/kubernetes-manifests/mongo</code> and <code>~/workspace/kubernetes-manifests/category</code> directories</p>
 </li>
 <li>
 <p>Walkthrough the manifest files &amp; understand the solution to the deployment architecture.</p>
@@ -438,7 +438,7 @@ table {
 <p>Create the Database tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">cd ~./workspace/kubernetes-manifests/mongo
+<pre class="CodeRay highlight"><code data-lang="shell script">cd ~/workspace/kubernetes-manifests/mongo
 kubectl apply -f storage-class.yaml
 kubectl apply -f pv.yaml
 kubectl apply -f pvc.yaml
@@ -464,7 +464,7 @@ kubectl get pvc</code></pre>
 <p>Create the service tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">cd ~./workspace/kubernetes-manifests/category
+<pre class="CodeRay highlight"><code data-lang="shell script">cd ~/workspace/kubernetes-manifests/category
 kubectl apply -f service.yaml
 kubectl apply -f deployment.yaml</code></pre>
 </div>

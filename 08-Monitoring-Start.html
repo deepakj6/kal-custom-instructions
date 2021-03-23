@@ -400,7 +400,7 @@ table {
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Update the <code>pages</code> deployment manifest file by setting the container image to <code>public.ecr.aws/z8i8u8l0/kal:monitor</code></p>
+<p>Update the <code>pages</code> deployment manifest file by setting the container image to <code>dellcloud/pages:monitor</code></p>
 </li>
 <li>
 <p>Update the <code>pages</code> deployment manifest file to add <code>volume</code>,
@@ -594,7 +594,7 @@ periodSeconds
         <span style="color:#606">tier</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">service</span></span>
     <span style="color:#606">spec</span>:
       <span style="color:#606">containers</span>:
-        - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: public.ecr.aws/z8i8u8l0/kal:service</span></span>
+        - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: dellcloud/pages:monitor</span></span>
           <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
           <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Always</span></span>
           <span style="color:#606">ports</span>:
@@ -603,16 +603,16 @@ periodSeconds
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: PAGE_CONTENT</span></span>
               <span style="color:#606">valueFrom</span>:
                 <span style="color:#606">configMapKeyRef</span>:
-                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages-config-map</span></span>
+                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
                   <span style="color:#606">key</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">PAGE_CONTENT</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_URL</span></span>
-              <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">jdbc:mysql://pages-mysql/pages?useSSL=false</span></span>
+              <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">jdbc:mysql://mysql/pages?allowPublicKeyRetrieval=true&amp;useSSL=false</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_USERNAME</span></span>
               <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">root</span><span style="color:#710">&quot;</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: SPRING_DATASOURCE_PASSWORD</span></span>
               <span style="color:#606">valueFrom</span>:
                 <span style="color:#606">secretKeyRef</span>:
-                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql-pass</span></span>
+                  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">mysql</span></span>
                   <span style="color:#606">key</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">password</span></span>
             - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: DEBUG</span></span>
               <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">true</span><span style="color:#710">&quot;</span></span>

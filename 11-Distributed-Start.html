@@ -423,7 +423,7 @@ We will be addressing service to service communication scenario.</p>
 This is the feature implemented and both the applications have addressed this scenario.</p>
 </li>
 <li>
-<p>The new image that has implemented this feature for pages and category would be <code>public.ecr.aws/z8i8u8l0/kal:pages-distributed</code> and <code>public.ecr.aws/z8i8u8l0/kal:category-distributed</code> respectively</p>
+<p>The new image that has implemented this feature for pages and category would be <code>dellcloud/pages:distributed</code> and <code>dellcloud/category:distributed</code> respectively</p>
 </li>
 </ol>
 </div>
@@ -466,7 +466,7 @@ This is the feature implemented and both the applications have addressed this sc
 <p>Lets provide <code>RBAC</code> access to these resources by creating <code>ClusterRole</code> and <code>RoleBinding</code> to the <code>default</code> service account within your namespace.</p>
 </li>
 <li>
-<p>Create <code>rbac.yaml</code> with the below contents in <code>~./workspace/kubernetes-manifests/pages</code> folder which is needed by the pages application.
+<p>Create <code>rbac.yaml</code> with the below contents in <code>~/workspace/kubernetes-manifests/pages</code> folder which is needed by the pages application.
 Once we create this within the cluster there will be no need to repeat it for category application as both share the same namespace and service accounts.</p>
 <div class="listingblock">
 <div class="content">
@@ -531,7 +531,7 @@ Once we create this within the cluster there will be no need to repeat it for ca
 <p>Create <code>[student-name]</code> namespace.</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~./workspace/kubernetes-manifests/pages/namespace.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/pages/namespace.yaml</code></pre>
 </div>
 </div>
 </li>
@@ -547,11 +547,11 @@ Once we create this within the cluster there will be no need to repeat it for ca
 <p>Create the Database tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~./workspace/kubernetes-manifests/mongo/storage-class.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mongo/pv.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mongo/pvc.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mongo/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mongo/deployment.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/mongo/storage-class.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mongo/pv.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mongo/pvc.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mongo/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mongo/deployment.yaml</code></pre>
 </div>
 </div>
 </li>
@@ -572,8 +572,8 @@ kubectl get pvc</code></pre>
 <p>Create the service tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~./workspace/kubernetes-manifests/category/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/category/deployment.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/category/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/category/deployment.yaml</code></pre>
 </div>
 </div>
 </li>
@@ -608,15 +608,15 @@ kubectl get service category</code></pre>
 <p>Create the Database tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~./workspace/kubernetes-manifests/pages/rbac.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/storage-class.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pv.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pvc.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/secret.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/deployment.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/flyway-configmap.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/mysql/flyway-job.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/pages/rbac.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/storage-class.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/pv.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/pvc.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/secret.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/deployment.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/configmap.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/mysql/flyway-job.yaml</code></pre>
 </div>
 </div>
 </li>
@@ -625,7 +625,7 @@ kubectl apply -f ~./workspace/kubernetes-manifests/mysql/flyway-job.yaml</code><
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="shell script">kubectl get deployment mysql
-kubectl get service pages-mysql
+kubectl get service mysql
 kubectl get pvc
 kubectl get jobs</code></pre>
 </div>
@@ -635,9 +635,9 @@ kubectl get jobs</code></pre>
 <p>Create the Service tier</p>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~./workspace/kubernetes-manifests/pages/config.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/service.yaml
-kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/pages/config.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/service.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml</code></pre>
 </div>
 </div>
 </li>

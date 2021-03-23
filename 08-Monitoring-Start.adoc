@@ -14,7 +14,7 @@ After completing the lab, you will be able to:
  
 == Configure logging for pages application
 
-. Update the `pages` deployment manifest file by setting the container image to `public.ecr.aws/z8i8u8l0/kal:monitor`
+. Update the `pages` deployment manifest file by setting the container image to `dellcloud/pages:monitor`
 . Update the `pages` deployment manifest file to add `volume`,
 `volume mount` & `logger` configuration settings
 
@@ -87,7 +87,7 @@ spec:
         tier: service
     spec:
       containers:
-        - image: public.ecr.aws/z8i8u8l0/kal:service
+        - image: dellcloud/pages:monitor
           name: pages
           imagePullPolicy: Always
           ports:
@@ -96,16 +96,16 @@ spec:
             - name: PAGE_CONTENT
               valueFrom:
                 configMapKeyRef:
-                  name: pages-config-map
+                  name: pages
                   key: PAGE_CONTENT
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://pages-mysql/pages?useSSL=false
+              value: jdbc:mysql://mysql/pages?allowPublicKeyRetrieval=true&useSSL=false
             - name: SPRING_DATASOURCE_USERNAME
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-pass
+                  name: mysql
                   key: password
             - name: DEBUG
               value: "true"

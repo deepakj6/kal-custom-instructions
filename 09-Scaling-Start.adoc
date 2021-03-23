@@ -14,7 +14,7 @@ After completing the lab, you will be able to:
 . Scale the pages application vertically, to request `500 Mi` memory and `0.25` cpu usage and limits as
 `900 Mi` memory and `1` cpu.
 
-. Update the `~./workspace/kubernetes-manifests/pages/deployment.yaml` file with the the resource request specification
+. Update the `~/workspace/kubernetes-manifests/pages/deployment.yaml` file with the the resource request specification
 and re-deploy pages.
 + 
 [source,yaml]
@@ -40,8 +40,8 @@ vi-editor opens up automatically with the live deployment file which can be edit
 . Scale out the pages application horizontally, by increasing the number of replicas to 2.
 
 . There are 2 ways of acheiving this:
-.. Update the `Deployment.spec.replicas` field of `~./workspace/kubernetes-manifests/pages/deployment.yaml` file
-and then using the command `kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml`
+.. Update the `Deployment.spec.replicas` field of `~/workspace/kubernetes-manifests/pages/deployment.yaml` file
+and then using the command `kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml`
 
 .. Imperative way:
  `kubectl scale deploy pages --replicas=2`
@@ -89,7 +89,7 @@ Kubernetes provides a persistent storage solution for containers called Persiste
 +
 For more information, refer link:https://kubernetes.io/docs/concepts/storage/persistent-volumes["https://kubernetes.io/docs/concepts/storage/persistent-volumes", window="_blank"]   
 
-. Create storage class object definition in `~./workspace/kubernetes-manifests/mysql/storage-class.yaml` as given below.
+. Create storage class object definition in `~/workspace/kubernetes-manifests/mysql/storage-class.yaml` as given below.
 +
 [source,yaml]
 --------
@@ -106,7 +106,7 @@ volumeBindingMode: Immediate
 
 --------
 
-. Create persistent volume definition in `~./workspace/kubernetes-manifests/mysql/pv.yaml` as given below. Replace `[student-name]` with your namespace name at 2 places.
+. Create persistent volume definition in `~/workspace/kubernetes-manifests/mysql/pv.yaml` as given below. Replace `[student-name]` with your namespace name at 2 places.
 +
 [source,yaml]
 --------
@@ -128,7 +128,7 @@ spec:
 
 --------
 
-. We can now request for the persistent volume, by creating a Persistent Volume Claim object with below specification in `~./workspace/kubernetes-manifests/mysql/pvc.yaml`. Replace `[student-name]` with your namespace name.
+. We can now request for the persistent volume, by creating a Persistent Volume Claim object with below specification in `~/workspace/kubernetes-manifests/mysql/pvc.yaml`. Replace `[student-name]` with your namespace name.
 
 +
 [source,yaml]
@@ -148,26 +148,15 @@ spec:
       storage: 1Gi
 
 --------
-. Edit and update the volume and volume mount section of `~./workspace/kubernetes-manifests/mysql/deployment.yaml` file to use the persistent volume claim defined earlier.
+. Edit and update the volume and volume mount section of `~/workspace/kubernetes-manifests/mysql/deployment.yaml` file to use the persistent volume claim defined earlier.
 +
 [source,yaml]
 --------
-
-          volumeMounts:
-            - name: mysql-persistent-storage
-              mountPath: /var/lib/mysql
       volumes:
-        - name: mysql-persistent-storage          
+        - name: mysql-persistent-storage
           persistentVolumeClaim:
             claimName: mysql-pvc-[student-name]
 
---------
-. Update the environment variable for spring datasource url in `~./workspace/kubernetes-manifests/pages/deployment.yaml` file with the below value
-+
-[source, yaml]
---------
-- name: SPRING_DATASOURCE_URL
-  value: jdbc:mysql://pages-mysql/pages?allowPublicKeyRetrieval=true&useSSL=false
 --------
 
 .  Delete deployments and job
@@ -185,9 +174,9 @@ spec:
 + 
 [source,shell script]
 --------
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/storage-class.yaml
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pv.yaml
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/pv.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/storage-class.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/pv.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/pvc.yaml
 
 --------
 
@@ -203,9 +192,9 @@ spec:
 + 
 [source,shell script]
 --------
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/deployment.yaml
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/flyway-job.yaml
- kubectl apply -f ~./workspace/kubernetes-manifests/pages/deployment.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/deployment.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/flyway-job.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml
 --------
 . Testing on minikube
 +
@@ -238,7 +227,7 @@ curl localhost:8080/pages
 
 #Let's create the mysql deployment. This time, we will not run the flyway migration job.
 
- kubectl apply -f ~./workspace/kubernetes-manifests/mysql/deployment.yaml
+ kubectl apply -f ~/workspace/kubernetes-manifests/mysql/deployment.yaml
 
  kubectl get deploy
 

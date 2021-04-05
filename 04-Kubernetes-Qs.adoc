@@ -28,12 +28,80 @@ After completing the lab, you will be able to understand and use Kubernetes conc
 
 
 . Create a busybox pod which prints "Hello from pages Yellow Pages" on the console
-. Create a busybox pod which prints "Hello from pages Yellow Pages" on the console, for every 10 seconds infinitely
-. Create an nginx pod and test it in the browser
-. Create a busybox pod which prints the output of nginx pod for every 10 seconds
 
++
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+kubectl run busybox --image=busybox  sh -- -c 'echo "Hello from pages Yellow Pages"'
+------------------
+
+[source, shell script]
+------------------
+kubectl delete po busybox
+------------------
+====
+
+. Create a busybox pod which prints "Hello from pages Yellow Pages" on the console, for every 10 seconds infinitely
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+kubectl run --image=busybox mybox sh -- -c 'while true;do echo "Hello from pages Yellow Pages";sleep 10;done'
+------------------
+
+[source, shell script]
+------------------
+kubectl delete po busybox
+------------------
+====
+
+. Create an nginx pod and test it in the browser
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+kubectl run nginx --image=nginx
+
+kubectl port-forward pod/nginx 8080:80
+------------------
+====
+
+
+. Create a busybox pod which prints the output of nginx pod for every 10 seconds
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+
+------------------
+====
 
 . Create a busybox pod which prints the `current date` on the console  - Instructions
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+
+------------------
+====
 . Create a busybox pod which prints `current date` on the console, for every 10 seconds infinitely  - Instructions
 . Create an nginx pod and test it in the browser  - Instructions
 . Create a busybox pod which prints the output of `pages application` for every 10 seconds infinitely  - Instructions
@@ -84,7 +152,7 @@ Adapter Output Sample
 
 [source, java]
 -------------
-Date: Thu Mar  4 09:36:42 UTC 2021
+Date: Thu Mar  4 09:36:42 GMT 2021
 Total Memory: 34GB
 Free Memory: 12GB
 -------------

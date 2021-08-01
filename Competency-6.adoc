@@ -1,0 +1,230 @@
+= Resource Quotas
+:stylesheet: boot-flatly.css
+:nofooter:
+:data-uri:
+:icons: font
+:linkattrs:
+
+This lab consists of a list of exercises to demonstrate and understand
+the most commonly used kubernetes commands and concepts to ramp up your kubernetes competency skills in the area of `Resource Quotas`
+
+
+
+== Learning Outcomes
+After completing the lab, you will be able to understand and use Kubernetes concepts related to the below topics:
+
+. Resource Quota
+. Namespaces
+. Service Accounts for security
+
+
+=== Start the minikube
+
+. Start minikube locally
+`minikube start --driver=virtualbox`
+
+. Verify the kubectl context `kubectl config get-contexts` is set to minikube. If not, set it to minikube `kubectl config use-context minikube`
+
+[NOTE]
+====
+Create all manifest resources in the directory `~/workspace/kubernetes-manifests/competencies`. Watch out for the right file names in the solution section.
+====
+=== Namespaces & ResourceQuotas
+
+
+**All the exercises in this section has to be completed in minikube & not on production cluster**
+
+. Create a namespace called `[student-name]-test` either imperatively or declaratively.
+
++
+
+.Click to see solution
+[%collapsible]
+====
+
+[source, shell script]
+------------------
+kubectl create namespace [student-name]-test
+------------------
+
+__After creating it, when you try to create k8s resources inside the cluster, which namespace will it get created in?
+Lets create an `nginx` pod__
+
+[source, shell script]
+------------------
+kubectl run nginx --image=nginx --image-pull-policy=IfNotPresent
+------------------
+
+[source, shell script]
+------------------
+kubectl get pods
+------------------
+
+Do you see the pod?
+
+[source, shell script]
+------------------
+kubectl get pods --all-namespaces
+------------------
+
+Was there an issue?  Discuss with your pair.
+
+[source, shell script]
+------------------
+kubectl delete po nginx
+------------------
+
+[source, shell script]
+------------------
+kubectl delete namespace [student-name]-test
+------------------
+
+.. What did you understand? Everytime you create a new namespace, you have to point the `kubectl context` to that particular namespace.
+Without doing that, you might end up creating it in a difference namespace.
+
+.. What is the workaround? You can pass `--namespace` or `-n` argument while creating the resource by explicitly specifying the namespace.
+====
+
+
+
+. Create a resource quota in the namespace `[student-name]` with the below requirement.
+
++
+[source, yaml]
+-------------
+pods: 5
+"requests.cpu": "2"
+"requests.memory": 1024m
+"limits.cpu": "4"
+"limits.memory": 2048m
+-------------
+
++
+
+.Click to see solution
+[%collapsible]
+====
+
+`~/workspace/kubernetes-manifests/competencies/resource-quota.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota
+  namespace: [student-name]
+spec:
+  hard:
+    pods: 5
+    "requests.cpu": "2"
+    "requests.memory": 1024Mi
+    "limits.cpu": "4"
+    "limits.memory": 2048Mi
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/resource-quota.yaml
+kubectl get resourcequota
+------------------
+
+Create an `nginx` pod within `[student-name]`
+
+
+[source, shell script]
+------------------
+kubectl run nginx --image=nginx --image-pull-policy=IfNotPresent
+------------------
+
+Do you see an error while trying to create the pod?  +
+
+
+**Error from server (Forbidden): pods "nginx" is forbidden: failed quota: resource-quota: must specify cpu,memory**
+
+This time try to create the pod using the manifest file.
+Take the help of `kubectl explain` command to see the options for specifying __resource requests & limits__ for a pod.
+Modify the manifest accordingly and create the pod.
+
+`~/workspace/kubernetes-manifests/competencies/pod-with-resource-quota.yaml`
+[source,yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: nginx
+  name: nginx
+  namespace: [student-name]
+spec:
+  containers:
+  - image: nginx
+    imagePullPolicy: IfNotPresent
+    name: nginx
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: "0.5"
+      limits:
+        memory: 1024Mi
+        cpu: "1"
+  restartPolicy: Always
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pod-with-resource-quota.yaml
+------------------
+
+Inspect the status of the pod and the resource quota
+
+[source, shell script]
+------------------
+kubectl get po
+kubectl get quota
+kubectl describe quota resource-quota
+------------------
+
+Clean up!
+
+[source, shell script]
+------------------
+kubectl delete po nginx
+kubectl delete quota resource-quota
+------------------
+
+====
+
+=== ServiceAccount
+
+. Create a secret called `docker-registry` of type `generic` in the namespace that you are currently working in.
+Use this secret to apply to all the pods in such a way that these credentials will be used by kubernetes while pulling images from dockerhub.
+One way to do that is by means of a patch operation updating the service account for the corresponding namespace.
+
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+docker logout
+docker login
+------------------
+
+[source, shell script]
+------------------
+cp ~/.docker/config.json config.json
+kubectl create secret generic docker-registry \
+    --from-file=.dockerconfigjson=config.json \
+    --type=kubernetes.io/dockerconfigjson -n default
+------------------
+
+[source, shell script]
+------------------
+kubectl get serviceaccount default -o yaml -n default
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "docker-registry"}]}' -n default
+kubectl get serviceaccount default -o yaml -n default
+rm config.json
+------------------
+====

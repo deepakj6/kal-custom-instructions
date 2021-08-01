@@ -1,0 +1,381 @@
+= ConfigMap and Secrets
+:stylesheet: boot-flatly.css
+:nofooter:
+:data-uri:
+:icons: font
+:linkattrs:
+
+This lab consists of a list of exercises to demonstrate and understand
+the most commonly used kubernetes commands and concepts to ramp up your kubernetes competency skills in the area of ConfigMap and Secrets.
+
+
+
+== Learning Outcomes
+After completing the lab, you will be able to understand and use Kubernetes concepts related to the below topics:
+
+. ConfigMaps
+. Secrets
+
+
+=== Start the minikube
+
+. Start minikube locally
+`minikube start --driver=virtualbox`
+
+. Verify the kubectl context `kubectl config get-contexts` is set to minikube. If not, set it to minikube `kubectl config use-context minikube`
+
+[NOTE]
+====
+Create all manifest resources in the directory `~/workspace/kubernetes-manifests/competencies`. Watch out for the right file names in the solution section.
+====
+
+=== Configmaps and Secrets
+
+. Create a ConfigMap `pages-config` from literal values with key=`PAGE_CONTENT` and value=`Hello from pages environment` imperatively. Create environment variables for pages aplication with key=`PAGE_CONTENT` and value to be read from the configmap
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+kubectl create configmap pages-config --from-literal=PAGE_CONTENT="Hello from pages environment"
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-3.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: PAGE_CONTENT
+        valueFrom:
+          configMapKeyRef:
+            name: pages-config
+            key: PAGE_CONTENT
+------------------
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-3.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get cm pages-config
+------------------
+[source, shell script]
+------------------
+kubectl get po pages
+kubectl exec -it pages -- env
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====
+. Create the above ConfigMap using yaml. Create a nginx pod and read the environment variables key and value from ConfigMap
+
++
+
+.Click to see solution
+[%collapsible]
+====
+`~/workspace/kubernetes-manifests/competencies/configuration/cm-4.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+data:
+  PAGE_CONTENT: Hello from pages environment
+kind: ConfigMap
+metadata:
+  name: pages-config
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-4.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: PAGE_CONTENT
+        valueFrom:
+          configMapKeyRef:
+            name: pages-config
+            key: PAGE_CONTENT
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/cm-4.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-4.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get cm pages-config
+------------------
+[source, shell script]
+------------------
+kubectl get po pages
+kubectl exec -it pages -- env
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====
+
+. Create a configMap called `pages-config` from the configuration file called `application.properties` that will be used by Pages application.
+Mount this configmap as a volume while creating pod for `pages` application.
+**Get the container image to be used from the instructors**
++
+`application.properties`
++
+[source, textmate]
+------------------
+page.content=Hello from pages environment
+------------------
+
++
+
+.Click to see solution
+[%collapsible]
+====
+`~/workspace/kubernetes-manifests/competencies/configuration/cm-6.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pages-config
+data:
+  application.properties: |
+    PAGE_CONTENT: Hello from pages environment
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-6.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  volumes:
+    - name: config-vol
+      configMap:
+        name: pages-config
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - name: config-vol
+        mountPath: /etc/config
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/cm-6.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-6.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get cm pages-config
+------------------
+[source, shell script]
+------------------
+kubectl get po pages
+kubectl exec -it pages -- ls /etc/config
+kubectl exec -it pages -- cat /etc/config/application.properties
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====
+
+. Create a secret `pages-secret` from literal values with key=`password` and value,  `base 64` encoded `admin@123` imperatively. Create environment variable for Pages application with key=`password` and value to be read from the secret.
+Use the `pages image` same as that in the previous exercise.
+
++
+
+.Click to see solution
+[%collapsible]
+====
+[source, shell script]
+------------------
+kubectl create secret generic pages-secret --from-literal=password=admin@123
+kubectl get secret pages-secret
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-9.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: password
+        valueFrom:
+          secretKeyRef:
+            name: pages-secret
+            key: password
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-9.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get po pages
+kubectl exec -it pages -- env
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====
+
+. Create a secret `pages-secret` from literal values with key=`password` and value=base 64 encoded value of `admin@123` using manifest files. Create environment for Pages application with key=`password` and value to be read from the secret.
+
++
+
+.Click to see solution
+[%collapsible]
+====
+`~/workspace/kubernetes-manifests/competencies/configuration/secret-10.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+data:
+  password: YWRtaW5AMTIz
+kind: Secret
+metadata:
+  name: pages-secret
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-10.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: password
+        valueFrom:
+          secretKeyRef:
+            name: pages-secret
+            key: password
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/secret-10.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-10.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get po pages
+kubectl exec -it pages -- env
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====
+
+
+. Create the above secret from a properties file with key=`password` and value=base 64 encoded value of `admin@123`. Mount this secret as a volume while creating an nginx pod.
+
++
+
+.Click to see solution
+[%collapsible]
+====
+`~/workspace/kubernetes-manifests/competencies/configuration/secret-11.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+data:
+  application.properties: cGFzc3dvcmQ9YWRtaW5AMTIzCg==
+kind: Secret
+metadata:
+  name: pages-secret
+------------------
+
+`~/workspace/kubernetes-manifests/competencies/configuration/pod-11.yaml`
+[source, yaml]
+------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: pages
+  name: pages
+spec:
+  volumes:
+    - name: secret-vol
+      secret:
+        secretName: pages-secret
+  containers:
+  - image: dellcloud/pages:1.0
+    name: pages
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - name: secret-vol
+        mountPath: /etc/config
+------------------
+
+[source, shell script]
+------------------
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/secret-11.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/competencies/configuration/pod-11.yaml
+------------------
+[source, shell script]
+------------------
+kubectl get secret pages-secret
+kubectl get po pages
+kubectl exec -it pages -- cat /etc/config/application.properties
+------------------
+[source, shell script]
+------------------
+kubectl delete po pages
+------------------
+====

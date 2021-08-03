@@ -424,61 +424,6 @@ the most commonly used kubernetes commands and concepts to understand <code>mult
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Create a pod that defines an application container which writes the current date to a log file every five seconds. The sidecar container is nginx serving that log file in a shared directory.</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pods/14.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">alpine</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">alpine</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">volumes</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: log-date-vol</span></span>
-      <span style="color:#606">emptyDir</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">{}</span></span>
-  <span style="color:#606">containers</span>:
-  - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: alpine</span></span>
-    <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">alpine</span></span>
-    <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-    <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-    <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;, &quot;while true; do date &gt;&gt; /etc/kal-directory/date-file.txt; sleep 5; done&quot;]</span></span>
-    <span style="color:#606">volumeMounts</span>:
-      - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: log-date-vol</span></span>
-        <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/etc/kal-directory</span></span>
-  - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: nginx</span></span>
-    <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">nginx</span></span>
-    <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-    <span style="color:#606">volumeMounts</span>:
-      - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: log-date-vol</span></span>
-        <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/etc/kal-directory</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/14.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl exec -it alpine -c nginx -- cat /etc/kal-directory/date-file.txt</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po alpine</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
 <p>Create a pod that defines an application container which writes the process to a file every 10 seconds. Create a adapter container that writes the datetime and the top 3 processes consuming maximum memory in a report file.</p>
 <div class="paragraph">
 <p>HINT: Use the command <code>ps aux</code> and sort it based on memory usage . The output format may slightly vary based on the OS kernel.</p>

@@ -446,33 +446,13 @@ cd ~/workspace/kubernetes-manifests</code></pre>
 </div>
 </li>
 <li>
-<p>Create a busybox pod which prints "Hello from pages Yellow Pages" on the console using manifest file.</p>
+<p>Create a busybox pod which prints "Hello from pages Yellow Pages" on the console imperatively</p>
 <details>
 <summary class="title">Click to see solution</summary>
 <div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pods/1.yaml</code></p>
-</div>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: busybox</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-      <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;,&quot;echo Hello from pages Yellow Pages&quot;]</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/1.yaml</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">kubectl run busybox --image=busybox --image-pull-policy=IfNotPresent  sh -- -c 'echo &quot;Hello from pages Yellow Pages&quot;'</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -575,74 +555,6 @@ localhost:8080 {from the browser}</code></pre>
 </div>
 </details>
 </li>
-<li>
-<p>Create a busybox pod which prints "Hello from pages Yellow Pages" on the console imperatively</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl run busybox --image=busybox --image-pull-policy=IfNotPresent  sh -- -c 'echo &quot;Hello from pages Yellow Pages&quot;'</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl logs busybox -f</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po busybox</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
-<p>Create a busybox pod which prints <code>current date</code> on the console, for every 10 seconds infinitely</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pods/7.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: busybox</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-      <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;,&quot;while true;do date;sleep 10;done&quot;]</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/7.yaml
-
-kubectl get po busybox</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl logs busybox -f</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po busybox</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
 </ol>
 </div>
 </div>
@@ -650,53 +562,6 @@ kubectl get po busybox</code></pre>
 <h3 id="_environment_variables">Environment variables:</h3>
 <div class="olist arabic">
 <ol class="arabic">
-<li>
-<p>Create environment variables for busybox pod with key=<code>course</code> and value=<code>K8s</code> and also prints "Hello!" on the console, for every 10 seconds infinitely using manifest file.
-Verify the environment variables are set properly</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pods/8.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: busybox</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">busybox</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-      <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;,&quot;while true;do echo 'Hello!';sleep 10;done&quot;]</span></span>
-      <span style="color:#606">env</span>:
-        - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: course</span></span>
-          <span style="color:#606">value</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">k8s</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/8.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl exec -it busybox -- env</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po busybox</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
 <li>
 <p>Create environment variables for pages application with key=<code>PAGE_CONTENT</code> and value=<code>Hello from pages environment</code>
 Verify the environment variables are set properly</p>
@@ -851,61 +716,6 @@ first request after 5 seconds and check if port 80 is accessible. Hint: use ngin
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po nginx</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
-<p>Configure liveness and readiness probe for pages to check if the application is accessible at port 8080</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pods/12.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-  - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: dellcloud/pages:1.0</span></span>
-    <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
-    <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-    <span style="color:#606">readinessProbe</span>:
-      <span style="color:#606">tcpSocket</span>:
-        <span style="color:#606">port</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">8080</span></span>
-      <span style="color:#606">initialDelaySeconds</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">5</span></span>
-    <span style="color:#606">livenessProbe</span>:
-      <span style="color:#606">httpGet</span>:
-        <span style="color:#606">path</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/</span></span>
-        <span style="color:#606">port</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">8080</span></span>
-      <span style="color:#606">periodSeconds</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">10</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/12.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl get po pages -w</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl describe po pages | grep -i ness</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po pages</code></pre>
 </div>
 </div>
 </div>

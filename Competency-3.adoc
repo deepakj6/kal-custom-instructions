@@ -35,40 +35,6 @@ Create all manifest resources in the directory `~/workspace/kubernetes-manifests
 
 === Labels, Selectors and Annotations
 
-. Add a label `tier=service` to the pages application and display the label
-
-+
-
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/pod-design/1.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: pages
-    tier: service
-  name: pages
-spec:
-  containers:
-    - image: dellcloud/pages:1.0
-      imagePullPolicy: IfNotPresent
-      name: pages
-------------------
-
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pod-design/1.yaml
-------------------
-[source, shell script]
-------------------
-kubectl get po pages --show-labels
-------------------
-====
-
 . Create a pod nginx and add a label `tier=frontend`
 
 +
@@ -428,75 +394,6 @@ kubectl delete svc nginx
 ------------------
 ====
 
-. Create a service (color) of type `nodeport` and expose `port 8080` and `target port 80`, with the selector app=colorful. Create appropriate `nginx` pod to be accessible by the service.
-
-+
-
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/services/2-pod.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    app: colorful
-  name: nginx
-spec:
-  containers:
-    - image: nginx
-      name: nginx
-      imagePullPolicy: IfNotPresent
-------------------
-`~/workspace/kubernetes-manifests/competencies/services/2.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: colorful
-  name: color
-spec:
-  ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 80
-  selector:
-    app: colorful
-  type: NodePort
-------------------
-
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/services/2.yaml
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/services/2-pod.yaml
-------------------
-[source, shell script]
-------------------
-kubectl get svc color -o wide
-kubectl get ep
-kubectl get po nginx --show-labels
-------------------
-[source, shell script]
-------------------
-kubectl port-forward svc/color 8080:8080
-------------------
-[source, shell script]
-------------------
-curl localhost:8080
-------------------
-[source, shell script]
-------------------
-kubectl delete po nginx
-------------------
-[source, shell script]
-------------------
-kubectl delete svc color
-------------------
-====
 . Create a service named `nginx` of type `NodePort` which routes the traffic to any pod which has the label `app=colorful` exposing `target port 80` on `port 80`.
 The service  does not route traffic to any pods yet. We shall use it in later exercises.
 
@@ -509,6 +406,7 @@ The service  does not route traffic to any pods yet. We shall use it in later ex
 [source, shell script]
 ------------------
 mkdir -p ~/workspace/kubernetes-manifests/competencies/services/green
+touch ~/workspace/kubernetes-manifests/competencies/services/green/service.yaml
 ------------------
 
 `~/workspace/kubernetes-manifests/competencies/services/green/service.yaml`
@@ -539,9 +437,9 @@ kubectl get ep
 
 ====
 
-. Create a `nginx-green` pod deriving from `nginx` image, which prints a custom message `Green` (HINT::  echo Green > /usr/share/nginx/html/index.html) instead of its original message, having the label `app=colorful` & Create a `nginx-blue` pod deriving from `nginx` image, which prints a custom message `Blue` (HINT:: echo Blue > /usr/share/nginx/html/index.html) instead of its original message having the label `app=colorful`
+. Create a `nginx-green` pod deriving from `dellcloud/nginx:green` image, which prints a custom message `Green`, having the label `app=colorful`.
+Create a `nginx-blue` pod deriving from `dellcloud/nginx:blue` image, which prints a custom message `Blue` having the label `app=colorful` .
 Make multiple requests to the `nginx` service created in the previous exercise and ensure that the service is routing requests between the two different pods.
-Delete the pods and services before moving on to the next exercise.
 
 +
 
@@ -550,41 +448,10 @@ Delete the pods and services before moving on to the next exercise.
 ====
 [source, shell script]
 ------------------
-cd ~/workspace/kubernetes-manifests/competencies/services/green
-------------------
-
-`~/workspace/kubernetes-manifests/competencies/services/green/Dockerfile`
-[source, shell script]
-------------------
-FROM nginx:latest
-RUN echo Green > /usr/share/nginx/html/index.html
-------------------
-
-[source, shell script]
-------------------
-docker build -t [docker-username]/nginx:green .
-docker push [docker-username]/nginx:green
-------------------
-
-[source, shell script]
-------------------
 mkdir ~/workspace/kubernetes-manifests/competencies/services/blue
-cd ~/workspace/kubernetes-manifests/competencies/services/blue
+touch ~/workspace/kubernetes-manifests/competencies/services/green/pod.yaml
+touch ~/workspace/kubernetes-manifests/competencies/services/blue/pod.yaml
 ------------------
-
-`~/workspace/kubernetes-manifests/competencies/services/blue/Dockerfile`
-[source, java]
-------------------
-FROM nginx:latest
-RUN echo Blue > /usr/share/nginx/html/index.html
-------------------
-
-[source, shell script]
-------------------
-docker build -t [docker-username]/nginx:blue .
-docker push [docker-username]/nginx:blue
-------------------
-
 
 `~/workspace/kubernetes-manifests/competencies/services/green/pod.yaml`
 [source, yaml]
@@ -837,62 +704,5 @@ kubectl exec -it alpine -- cat /etc/kal-directory/date-file.txt
 kubectl delete po alpine
 kubectl delete pvc log-pvc-[student-name]
 kubectl delete pv log-pv-[student-name]
-------------------
-====
-
-. Re-design the pod that was created in  Multicontainer section: Exercise 3, such that the written files will be mounted on Persistent Volume.
-Create required Persistent Volume and Persistent Volume Claim. Storage capacity of Persistent Volume shoud not exceed 500M
-
-+
-
-.Click to see Notes
-[%collapsible]
-====
-Create  `~/workspace/kubernetes-manifests/competencies/volumes/pod-2.yaml` file with the below content and **modify the manifest to use PV & PVC**
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: multi-container-pod
-  name: multi-container-pod
-spec:
-  volumes:
-    - name: shared-vol
-      emptyDir: {}
-  containers:
-    - image: ubuntu
-      name: ubuntu
-      imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c", "while true; do date > /logs/output.txt; free -tw --giga >> /logs/output.txt; sleep 10; done"]
-      volumeMounts:
-        - name: shared-vol
-          mountPath: /logs
-    - image: alpine
-      name: alpine
-      imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c", "while true; do echo  'Date: ' $(cat /logs/output.txt |  head -1) > /logs/report.txt; echo 'Total Memory:' $(cat /logs/output.txt |  grep Total: | tr -s ' ' | cut -d ' ' -f 2) GB >> /logs/report.txt; echo 'Free Memory:' $(cat /logs/output.txt |  grep Total: | tr -s ' ' | cut -d ' ' -f 3) GB >> /logs/report.txt; sleep 10; done"]
-      volumeMounts:
-        - name: shared-vol
-          mountPath: /logs
-------------------
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/volumes/pod-2.yaml
-------------------
-[source, shell script]
-------------------
-kubectl get po multi-container-pod
-------------------
-[source, shell script]
-------------------
-kubectl exec -it multi-container-pod -c alpine -- cat /logs/report.txt
-------------------
-[source, shell script]
-------------------
-kubectl delete po  multi-container-pod
 ------------------
 ====

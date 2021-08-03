@@ -49,47 +49,26 @@ cd ~/workspace/kubernetes-manifests
 mkdir ~/workspace/kubernetes-manifests/competencies/pods
 ------------------
 
-. Create a busybox pod which prints "Hello from pages Yellow Pages" on the console using manifest file.
+. Create a busybox pod which prints "Hello from pages Yellow Pages" on the console imperatively
 
 +
-
 .Click to see solution
 [%collapsible]
 ====
-
-`~/workspace/kubernetes-manifests/competencies/pods/1.yaml`
-
-
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: busybox
-  name: busybox
-spec:
-  containers:
-    - image: busybox
-      name: busybox
-      imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c","echo Hello from pages Yellow Pages"]
-------------------
 [source, shell script]
 ------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/1.yaml
+kubectl run busybox --image=busybox --image-pull-policy=IfNotPresent  sh -- -c 'echo "Hello from pages Yellow Pages"'
 ------------------
 [source, shell script]
 ------------------
 kubectl logs busybox -f
 ------------------
+
 [source, shell script]
 ------------------
 kubectl delete po busybox
 ------------------
 ====
-
 . Create a busybox pod which prints "Hello from pages Yellow Pages" on the console, for every 10 seconds infinitely using manifest file.
 +
 .Click to see solution
@@ -126,6 +105,7 @@ kubectl logs busybox -f
 kubectl delete po busybox
 ------------------
 ====
+
 . Create an nginx pod and test it in the browser
 +
 .Click to see solution
@@ -164,111 +144,9 @@ kubectl delete po nginx
 ------------------
 ====
 
-. Create a busybox pod which prints "Hello from pages Yellow Pages" on the console imperatively
-
-+
-.Click to see solution
-[%collapsible]
-====
-[source, shell script]
-------------------
-kubectl run busybox --image=busybox --image-pull-policy=IfNotPresent  sh -- -c 'echo "Hello from pages Yellow Pages"'
-------------------
-[source, shell script]
-------------------
-kubectl logs busybox -f
-------------------
-
-[source, shell script]
-------------------
-kubectl delete po busybox
-------------------
-====
-. Create a busybox pod which prints `current date` on the console, for every 10 seconds infinitely
-+
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/pods/7.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: busybox
-  name: busybox
-spec:
-  containers:
-    - image: busybox
-      name: busybox
-      imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c","while true;do date;sleep 10;done"]
-------------------
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/7.yaml
-
-kubectl get po busybox
-------------------
-[source, shell script]
-------------------
-kubectl logs busybox -f
-------------------
-[source, shell script]
-------------------
-kubectl delete po busybox
-------------------
-
-====
-
 
 
 === Environment variables:
-
-. Create environment variables for busybox pod with key=`course` and value=`K8s` and also prints "Hello!" on the console, for every 10 seconds infinitely using manifest file.
-    Verify the environment variables are set properly
-
-+
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/pods/8.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: busybox
-  name: busybox
-spec:
-  containers:
-    - image: busybox
-      name: busybox
-      imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c","while true;do echo 'Hello!';sleep 10;done"]
-      env:
-        - name: course
-          value: k8s
-------------------
-
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/8.yaml
-------------------
-[source, shell script]
-------------------
-kubectl exec -it busybox -- env
-------------------
-[source, shell script]
-------------------
-kubectl delete po busybox
-------------------
-====
-
 
 . Create environment variables for pages application with key=`PAGE_CONTENT` and value=`Hello from pages environment`
     Verify the environment variables are set properly
@@ -406,54 +284,6 @@ kubectl describe po nginx | grep -i ness
 [source, shell script]
 ------------------
 kubectl delete po nginx
-------------------
-====
-. Configure liveness and readiness probe for pages to check if the application is accessible at port 8080
-
-+
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/pods/12.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: pages
-  name: pages
-spec:
-  containers:
-  - image: dellcloud/pages:1.0
-    name: pages
-    imagePullPolicy: IfNotPresent
-    readinessProbe:
-      tcpSocket:
-        port: 8080
-      initialDelaySeconds: 5
-    livenessProbe:
-      httpGet:
-        path: /
-        port: 8080
-      periodSeconds: 10
-------------------
-
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/12.yaml
-------------------
-[source, shell script]
-------------------
-kubectl get po pages -w
-------------------
-[source, shell script]
-------------------
-kubectl describe po pages | grep -i ness
-------------------
-[source, shell script]
-------------------
-kubectl delete po pages
 ------------------
 ====
 

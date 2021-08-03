@@ -29,56 +29,6 @@ Create all manifest resources in the directory `~/workspace/kubernetes-manifests
 ====
 
 === Multi-Container Pod Design patterns
-. Create a pod that defines an application container which writes the current date to a log file every five seconds. The sidecar container is nginx serving that log file in a shared directory.
-
-+
-.Click to see solution
-[%collapsible]
-====
-`~/workspace/kubernetes-manifests/competencies/pods/14.yaml`
-[source, yaml]
-------------------
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    run: alpine
-  name: alpine
-spec:
-  volumes:
-    - name: log-date-vol
-      emptyDir: {}
-  containers:
-  - image: alpine
-    name: alpine
-    imagePullPolicy: IfNotPresent
-    command: ["/bin/sh"]
-    args: ["-c", "while true; do date >> /etc/kal-directory/date-file.txt; sleep 5; done"]
-    volumeMounts:
-      - name: log-date-vol
-        mountPath: /etc/kal-directory
-  - image: nginx
-    name: nginx
-    imagePullPolicy: IfNotPresent
-    volumeMounts:
-      - name: log-date-vol
-        mountPath: /etc/kal-directory
-------------------
-
-[source, shell script]
-------------------
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pods/14.yaml
-------------------
-[source, shell script]
-------------------
-kubectl exec -it alpine -c nginx -- cat /etc/kal-directory/date-file.txt
-------------------
-[source, shell script]
-------------------
-kubectl delete po alpine
-------------------
-====
-
 
 . Create a pod that defines an application container which writes the process to a file every 10 seconds. Create a adapter container that writes the datetime and the top 3 processes consuming maximum memory in a report file.
 
@@ -97,7 +47,6 @@ student  java            16213  2.7  3.7  5900  2976  07:34:42 00:06:47
 student  gnome-shell      2373 21.7  1.7  2612  1565  Feb 22 2-04:02:42
 student  chrome          14101  1.3  1.1  2512  596  13:09:55 00:17:56
 -------------
-
 
 +
 

@@ -570,65 +570,6 @@ kubectl get pods</code></pre>
 </div>
 </details>
 </li>
-<li>
-<p>Create a cron job to print "Time: 3.30 pm. It is break time. Lets stretch out a bit or have a coffee!" at 3.30pm today</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/jobs/job-6.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">batch/v1beta1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">CronJob</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">job-6</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">jobTemplate</span>:
-    <span style="color:#606">metadata</span>:
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">job-6</span></span>
-    <span style="color:#606">spec</span>:
-      <span style="color:#606">template</span>:
-        <span style="color:#606">metadata</span>:
-        <span style="color:#606">spec</span>:
-          <span style="color:#606">volumes</span>:
-            - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: tz-config</span></span>
-              <span style="color:#606">hostPath</span>:
-                <span style="color:#606">path</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/usr/share/zoneinfo/Europe/Moscow</span></span>
-          <span style="color:#606">containers</span>:
-          - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: busybox</span></span>
-            <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">job-6</span></span>
-            <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-            <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-            <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;,&quot;echo Time: 3.30 pm. It is break time. Lets stretch out a bit or have a coffee!&quot;]</span></span>
-            <span style="color:#606">volumeMounts</span>:
-              - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: tz-config</span></span>
-                <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/etc/localtime</span></span>
-          <span style="color:#606">restartPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">OnFailure</span></span>
-  <span style="color:#606">schedule</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">'30 15 * * *'</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/jobs/job-6.yaml
-kubectl get cj job-6
-kubectl get pods</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl logs &lt;pod-name&gt;</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete cronjob job-6</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
 </ol>
 </div>
 </div>

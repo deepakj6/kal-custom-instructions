@@ -438,43 +438,6 @@ the most commonly used kubernetes commands and concepts to ramp up your kubernet
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Add a label <code>tier=service</code> to the pages application and display the label</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/pod-design/1.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
-    <span style="color:#606">tier</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">service</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: dellcloud/pages:1.0</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">pages</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/pod-design/1.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl get po pages --show-labels</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
 <p>Create a pod nginx and add a label <code>tier=frontend</code></p>
 <details>
 <summary class="title">Click to see solution</summary>
@@ -876,86 +839,6 @@ kubectl get po nginx --show-labels</code></pre>
 </details>
 </li>
 <li>
-<p>Create a service (color) of type <code>nodeport</code> and expose <code>port 8080</code> and <code>target port 80</code>, with the selector app=colorful. Create appropriate <code>nginx</code> pod to be accessible by the service.</p>
-<details>
-<summary class="title">Click to see solution</summary>
-<div class="content">
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/services/2-pod.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">colorful</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">nginx</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: nginx</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">nginx</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span></code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/services/2.yaml</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Service</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">colorful</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">color</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">ports</span>:
-  - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">port: 8080</span></span>
-    <span style="color:#606">protocol</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">TCP</span></span>
-    <span style="color:#606">targetPort</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">80</span></span>
-  <span style="color:#606">selector</span>:
-    <span style="color:#606">app</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">colorful</span></span>
-  <span style="color:#606">type</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">NodePort</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/services/2.yaml
-kubectl apply -f ~/workspace/kubernetes-manifests/competencies/services/2-pod.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl get svc color -o wide
-kubectl get ep
-kubectl get po nginx --show-labels</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl port-forward svc/color 8080:8080</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">curl localhost:8080</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po nginx</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete svc color</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
 <p>Create a service named <code>nginx</code> of type <code>NodePort</code> which routes the traffic to any pod which has the label <code>app=colorful</code> exposing <code>target port 80</code> on <code>port 80</code>.
 The service  does not route traffic to any pods yet. We shall use it in later exercises.</p>
 <details>
@@ -963,7 +846,8 @@ The service  does not route traffic to any pods yet. We shall use it in later ex
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">mkdir -p ~/workspace/kubernetes-manifests/competencies/services/green</code></pre>
+<pre class="CodeRay highlight"><code data-lang="shell script">mkdir -p ~/workspace/kubernetes-manifests/competencies/services/green
+touch ~/workspace/kubernetes-manifests/competencies/services/green/service.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -999,51 +883,17 @@ kubectl get ep</code></pre>
 </details>
 </li>
 <li>
-<p>Create a <code>nginx-green</code> pod deriving from <code>nginx</code> image, which prints a custom message <code>Green</code> (HINT::  echo Green &gt; /usr/share/nginx/html/index.html) instead of its original message, having the label <code>app=colorful</code> &amp; Create a <code>nginx-blue</code> pod deriving from <code>nginx</code> image, which prints a custom message <code>Blue</code> (HINT:: echo Blue &gt; /usr/share/nginx/html/index.html) instead of its original message having the label <code>app=colorful</code>
-Make multiple requests to the <code>nginx</code> service created in the previous exercise and ensure that the service is routing requests between the two different pods.
-Delete the pods and services before moving on to the next exercise.</p>
+<p>Create a <code>nginx-green</code> pod deriving from <code>dellcloud/nginx:green</code> image, which prints a custom message <code>Green</code>, having the label <code>app=colorful</code>.
+Create a <code>nginx-blue</code> pod deriving from <code>dellcloud/nginx:blue</code> image, which prints a custom message <code>Blue</code> having the label <code>app=colorful</code> .
+Make multiple requests to the <code>nginx</code> service created in the previous exercise and ensure that the service is routing requests between the two different pods.</p>
 <details>
 <summary class="title">Click to see solution</summary>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">cd ~/workspace/kubernetes-manifests/competencies/services/green</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/services/green/Dockerfile</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">FROM nginx:latest
-RUN echo Green &gt; /usr/share/nginx/html/index.html</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">docker build -t [docker-username]/nginx:green .
-docker push [docker-username]/nginx:green</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
 <pre class="CodeRay highlight"><code data-lang="shell script">mkdir ~/workspace/kubernetes-manifests/competencies/services/blue
-cd ~/workspace/kubernetes-manifests/competencies/services/blue</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><code>~/workspace/kubernetes-manifests/competencies/services/blue/Dockerfile</code></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java">FROM nginx:latest
-RUN echo Blue &gt; /usr/share/nginx/html/index.html</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">docker build -t [docker-username]/nginx:blue .
-docker push [docker-username]/nginx:blue</code></pre>
+touch ~/workspace/kubernetes-manifests/competencies/services/green/pod.yaml
+touch ~/workspace/kubernetes-manifests/competencies/services/blue/pod.yaml</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1335,69 +1185,6 @@ kubectl apply -f ~/workspace/kubernetes-manifests/competencies/volumes/pod-1.yam
 <pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po alpine
 kubectl delete pvc log-pvc-[student-name]
 kubectl delete pv log-pv-[student-name]</code></pre>
-</div>
-</div>
-</div>
-</details>
-</li>
-<li>
-<p>Re-design the pod that was created in  Multicontainer section: Exercise 3, such that the written files will be mounted on Persistent Volume.
-Create required Persistent Volume and Persistent Volume Claim. Storage capacity of Persistent Volume shoud not exceed 500M</p>
-<details>
-<summary class="title">Click to see Notes</summary>
-<div class="content">
-<div class="paragraph">
-<p>Create  <code>~/workspace/kubernetes-manifests/competencies/volumes/pod-2.yaml</code> file with the below content and <strong>modify the manifest to use PV &amp; PVC</strong></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="yaml"><span style="color:#606">apiVersion</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">v1</span></span>
-<span style="color:#606">kind</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">Pod</span></span>
-<span style="color:#606">metadata</span>:
-  <span style="color:#606">labels</span>:
-    <span style="color:#606">run</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">multi-container-pod</span></span>
-  <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">multi-container-pod</span></span>
-<span style="color:#606">spec</span>:
-  <span style="color:#606">volumes</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: shared-vol</span></span>
-      <span style="color:#606">emptyDir</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">{}</span></span>
-  <span style="color:#606">containers</span>:
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: ubuntu</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">ubuntu</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-      <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;, &quot;while true; do date &gt; /logs/output.txt; free -tw --giga &gt;&gt; /logs/output.txt; sleep 10; done&quot;]</span></span>
-      <span style="color:#606">volumeMounts</span>:
-        - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: shared-vol</span></span>
-          <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/logs</span></span>
-    - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">image: alpine</span></span>
-      <span style="color:#606">name</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">alpine</span></span>
-      <span style="color:#606">imagePullPolicy</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">IfNotPresent</span></span>
-      <span style="color:#606">command</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;/bin/sh&quot;]</span></span>
-      <span style="color:#606">args</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">[&quot;-c&quot;, &quot;while true; do echo  'Date: ' $(cat /logs/output.txt |  head -1) &gt; /logs/report.txt; echo 'Total Memory:' $(cat /logs/output.txt |  grep Total: | tr -s ' ' | cut -d ' ' -f 2) GB &gt;&gt; /logs/report.txt; echo 'Free Memory:' $(cat /logs/output.txt |  grep Total: | tr -s ' ' | cut -d ' ' -f 3) GB &gt;&gt; /logs/report.txt; sleep 10; done&quot;]</span></span>
-      <span style="color:#606">volumeMounts</span>:
-        - <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">name: shared-vol</span></span>
-          <span style="color:#606">mountPath</span>: <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#D20">/logs</span></span></code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl apply -f ~/workspace/kubernetes-manifests/competencies/volumes/pod-2.yaml</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl get po multi-container-pod</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl exec -it multi-container-pod -c alpine -- cat /logs/report.txt</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="shell script">kubectl delete po  multi-container-pod</code></pre>
 </div>
 </div>
 </div>

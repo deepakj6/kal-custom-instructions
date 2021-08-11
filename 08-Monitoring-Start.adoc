@@ -181,9 +181,6 @@ curl http://locahost:8080/pages
 
 --------
 
-. Did you notice a delay in starting the application?
-. Verify the log files which are useful in troubleshooting and debugging
-
 == Advanced usecase challenges
 
 . Implement centralized logging by aggregating the logs and persisting it from all the pods and nodes into a single datastore. 

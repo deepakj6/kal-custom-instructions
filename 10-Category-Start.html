@@ -11,7 +11,7 @@
     <script src="velocity.min.js"></script>
     <link rel="stylesheet" href="font-awesome.min.css" />
     <script src="jquery-3.5.1.min.js"></script>
-    <script src="jquery-3.5.1.min.js"></script>
+    <script src="copy.js"></script>
 <style>
 /* Based on Flatly from Bootswatch (https://bootswatch.com/flatly/) */
 @import url("//fonts.googleapis.com/css?family=Lato:400,700,400italic");
@@ -506,80 +506,6 @@ kubectl get service category</code></pre>
 </div>
 </div>
 </div>
-<script>
-(function(){
-
-	// Get the elements.
-	// - the 'pre' element.
-	// - the 'div' with the 'paste-content' id.
-
-	var pre = document.getElementsByTagName('pre');
-	var pasteContent = document.getElementById('paste-content');
-
-	// Add a copy button in the 'pre' element.
-	// which only has the className of 'language-'.
-
-	for (var i = 0; i < pre.length; i++) {
-		var isLanguage = pre[i].children[0].className.indexOf('language-');
-
-		if ( isLanguage === 0 ) {
-			var button  = document.createElement('button');
-			button.className = 'copy-button';
-			button.textContent = 'COPY';
-			button.style.float = 'right';
-
-            var image = document.createElement('img');
-			image.src = "clipboard.svg";
-			image.width = "21";
-			image.height = "27";
-
-			button.appendChild(image);
-			pre[i].appendChild(button);
-
-		}
-	};
-
-	// Run Clipboard
-
-	var copyCode = new Clipboard('.copy-button', {
-		target: function(trigger) {
-			return trigger.previousElementSibling;
-    }
-	});
-
-	// On success:
-	// - Change the "Copy" text to "Copied".
-	// - Swap it to "Copy" in 2s.
-	// - Lead user to the "contenteditable" area with Velocity scroll.
-
-	copyCode.on('success', function(event) {
-		event.clearSelection();
-		//event.trigger.textContent = 'Copied';
-		event.trigger.firstChild.textContent = 'Copied!';
-
-		window.setTimeout(function () {
-            event.trigger.firstChild.textContent = 'COPY';
-		}, 2000);
-
-		$.Velocity(pasteContent, 'scroll', {
-			duration: 1000
-		});
-	});
-
-	// On error (Safari):
-	// - Change the  "Press Ctrl+C to copy"
-	// - Swap it to "Copy" in 2s.
-
-	copyCode.on('error', function(event) {
-		event.trigger.textContent = 'Press "Ctrl + C" to copy';
-		window.setTimeout(function() {
-			event.trigger.textContent = 'Copy';
-		}, 5000);
-	});
-
-
-
-})();
 </script>
 <!--analytics-->
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>

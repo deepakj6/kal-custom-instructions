@@ -198,7 +198,7 @@ spec:
               value: "3306"
             - name: MYSQL_DATABASE
               value: "pages"
-           ports:
+          ports:
             - containerPort: 3306
               name: mysql
           volumeMounts:
@@ -252,10 +252,10 @@ data::
 apiVersion: v1
 kind: ConfigMap
 metadata:
-name: mysql
-namespace: [student-name]
+  name: mysql
+  namespace: [student-name]
 data:
-spring.datasource.username: root
+  spring.datasource.username: root
 
   V1__inital_schema.sql: |
     USE pages;

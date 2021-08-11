@@ -162,9 +162,9 @@ kubectl config use-context minikube
 
 kubectl config set-context --current --namespace [student-name]
 
-kubectl delete deploy mysql
+kubectl delete deploy pages
 
-kubectl apply -f deployment/mysql-deployment.yaml
+kubectl apply -f ~/workspace/kubernetes-manifests/pages/deployment.yaml
 
 kubectl get deploy
 --------
@@ -181,9 +181,8 @@ curl http://locahost:8080/pages
 
 --------
 
-. What error do you see?
-
-. Find out the root cause of the problem and fix it.
+. Did you notice a delay in starting the application?
+. Verify the log files which are useful in troubleshooting and debugging
 
 == Advanced usecase challenges
 
